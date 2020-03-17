@@ -1,0 +1,14 @@
+@import "sass-material-colors";
+
+.root {
+  border-radius: 3px;
+  padding: 1rem;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.error {
+  background: material-color("red", "50");
+  border: 1px solid material-color("red", "400");
+  color: material-color("red", "400");
+}

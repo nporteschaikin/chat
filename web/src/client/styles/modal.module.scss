@@ -1,0 +1,25 @@
+@import "sass-material-colors";
+
+.root {
+  position: fixed;
+  z-index: 9999;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: scale(0);
+  width: 100%;
+  transition: none;
+}
+
+.background {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(material-color("grey", "900"), 0.9);
+  height: 100%;
+}
+
+.visible {
+  transform: scale(1);
+}

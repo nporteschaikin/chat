@@ -1,0 +1,25 @@
+.root {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  header,
+  form {
+    padding-bottom: 2rem;
+  }
+
+  header {
+    font-size: 7rem;
+    text-align: center;
+  }
+
+  footer {
+    text-align: center;
+    font-size: 1.25rem;
+  }
+}
+
+.box {
+  width: 500px;
+}

@@ -1,0 +1,36 @@
+@import "sass-material-colors";
+
+.popular-header {
+  margin-bottom: 0.5rem;
+  padding: 0 1rem;
+}
+
+.link {
+  padding: 1rem;
+  display: block;
+  border-radius: 5px;
+  margin-top: 1px;
+
+  span {
+    display: block;
+
+    &:first-child {
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: material-color("grey", "900");
+    }
+
+    + span {
+      font-size: 1rem;
+      color: material-color("grey", "500");
+    }
+  }
+
+  &.selected {
+    background: material-color("grey", "100");
+  }
+
+  &:hover {
+    background: material-color("grey", "50");
+  }
+}

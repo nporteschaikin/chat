@@ -1,0 +1,22 @@
+@import "sass-material-colors";
+
+.root {
+  border-radius: 3px;
+  text-align: center;
+  color: #fff;
+  width: 100%;
+  background: material-color("deep-purple", "700");
+  font-size: 1em;
+  font-weight: 600;
+  padding: 1rem;
+  cursor: pointer;
+  outline: none;
+
+  &:hover {
+    background: material-color("deep-purple", "900");
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}

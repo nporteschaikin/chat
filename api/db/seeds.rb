@@ -1,0 +1,1 @@
+Room.create_initial!

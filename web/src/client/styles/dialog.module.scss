@@ -1,0 +1,16 @@
+@import "sass-material-colors";
+
+.root {
+  width: 600px;
+  background: #fff;
+  box-shadow: 0 0 12px rgba(material-color("grey", "900"), 0.25);
+  border-radius: 5px;
+}
+
+.header {
+  padding: 1.5rem;
+}
+
+.body {
+  padding: 0 1.5rem 1.5rem;
+}

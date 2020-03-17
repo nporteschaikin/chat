@@ -1,0 +1,36 @@
+@import "sass-material-colors";
+
+.root {
+  border-radius: 50%;
+  background: material-color("grey", "100");
+  position: relative;
+
+  img {
+    display: block;
+    width: 100%;
+    border-radius: 50%;
+  }
+}
+
+.state {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #fff;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: material-color("grey", "500");
+}
+
+.online {
+  background: material-color("green", "500");
+}
+
+.away {
+  background: material-color("yellow", "500");
+}
+
+.group {
+  display: flex;
+}

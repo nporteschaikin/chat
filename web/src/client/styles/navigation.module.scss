@@ -1,0 +1,142 @@
+@import "./variables";
+@import "sass-material-colors";
+
+$shared-border-radius: 5px;
+
+.root {
+  background: material-color("deep-purple", "700");
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: $navigation-width;
+}
+
+.section {
+  margin-bottom: 1em;
+}
+
+.opened {
+  a {
+    &.current {
+      background: material-color("teal", "500");
+      color: material-color("grey", "50");
+
+      &:hover {
+        background: material-color("teal", "600");
+      }
+
+      &:active {
+        background: material-color("teal", "700");
+      }
+    }
+  }
+}
+
+.links {
+  height: 100%;
+  overflow-y: auto;
+  padding: 1.5rem;
+  margin-bottom: 1px;
+
+  a {
+    color: material-color("grey", "300");
+    display: block;
+    margin: 0 -0.5rem;
+    padding: 0.5rem;
+    border-radius: $shared-border-radius;
+
+    &:hover {
+      background: material-color("deep-purple", "800");
+      color: material-color("grey", "50");
+    }
+
+    &:active {
+      background: material-color("deep-purple", "900");
+      color: material-color("grey", "50");
+    }
+  }
+
+  h4 {
+    color: material-color("deep-purple", "50");
+    margin-bottom: 0.5rem;
+  }
+}
+
+.user {
+  a {
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    line-height: 1;
+    background: material-color("deep-purple", "800");
+
+    &:hover {
+      cursor: pointer;
+      background: material-color("deep-purple", "900");
+    }
+  }
+}
+
+.avatar {
+  padding-right: 0.5rem;
+}
+
+.names {
+  flex-grow: 1;
+  line-height: 1.2rem;
+
+  strong,
+  span {
+    display: block;
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  strong {
+    color: material-color("grey", "50");
+  }
+
+  span {
+    color: material-color("grey", "200");
+    font-size: 0.85rem;
+  }
+}
+
+.search {
+  padding: 1.5rem 1.5rem 0;
+  margin: 0 -0.5rem;
+
+  button {
+    display: flex;
+    background: material-color("deep-purple", "900");
+    border-radius: $shared-border-radius;
+    padding: 0.5rem 1rem;
+    color: material-color("deep-purple", "100");
+    cursor: pointer;
+    font-size: 1rem;
+    width: 100%;
+    text-align: left;
+    align-items: center;
+    outline: none;
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  svg {
+    margin-right: 0.5rem;
+  }
+
+  span {
+    display: inline-block;
+
+    &:first-child {
+      line-height: 0;
+    }
+  }
+}

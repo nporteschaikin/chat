@@ -1,0 +1,25 @@
+@import "sass-material-colors";
+
+.root {
+  display: flex;
+
+  > div {
+    &:first-child {
+      margin-right: 0.75rem;
+    }
+  }
+}
+
+.details {
+  margin-bottom: 0.25rem;
+  font-size: 1.05rem;
+}
+
+.signature {
+  font-size: 0.95rem;
+  color: material-color("grey", "700");
+}
+
+.body {
+  font-size: 1.15rem;
+}

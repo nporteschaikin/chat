@@ -1,0 +1,27 @@
+@import "sass-material-colors";
+
+.card {
+  background: #fff;
+  border-radius: 3px;
+  display: none;
+  width: 300px;
+  border: 1px solid material-color("grey", "100");
+  box-shadow: 0 0 6px rgba(material-color("grey", "200"), 0.2);
+  position: relative;
+
+  li {
+    padding: 0.5rem 1rem;
+  }
+}
+
+.visible {
+  display: block;
+}
+
+.icon-button {
+  display: flex;
+
+  &:first-child {
+    width: 100;
+  }
+}

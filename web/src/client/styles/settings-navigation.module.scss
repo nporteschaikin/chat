@@ -1,0 +1,43 @@
+@import "./variables";
+@import "sass-material-colors";
+
+.root {
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  left: 0;
+  position: fixed;
+  top: 0;
+  width: $navigation-width;
+
+  a {
+    color: material-color("grey", "900");
+    display: block;
+    margin: 0 -0.5rem;
+    padding: 0.5rem;
+    border-radius: 5px;
+
+    &.current {
+      background: material-color("deep-purple", "900");
+      color: material-color("grey", "50");
+    }
+
+    &:active {
+      background: material-color("deep-purple", "700");
+      color: material-color("grey", "50");
+    }
+  }
+}
+
+.links {
+  padding: 1.5rem;
+}
+
+.logout {
+  padding: 1.5rem;
+}
+
+.link {
+  cursor: pointer;
+}

@@ -1,0 +1,12 @@
+@import "sass-material-colors";
+
+.screen {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.purple {
+  background-color: material-color("deep-purple", "700") !important;
+}

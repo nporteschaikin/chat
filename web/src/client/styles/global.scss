@@ -1,0 +1,38 @@
+@import url("https://fonts.googleapis.com/css?family=Barlow:400,500,600&display=swap");
+
+@import "sass-material-colors";
+
+* {
+  -moz-osx-font-smoothing: grayscale;
+  border: 0;
+  box-sizing: border-box;
+  font-family: "Barlow", sans-serif;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+}
+
+strong {
+  font-weight: 500;
+}
+
+body,
+html,
+#app {
+  height: 100%;
+}
+
+body,
+input,
+textarea {
+  color: material-color("grey", "800");
+}
+
+h5 {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}

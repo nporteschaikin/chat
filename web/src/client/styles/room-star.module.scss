@@ -1,0 +1,10 @@
+@import "sass-material-colors";
+
+.root {
+  fill: material-color("grey", "500");
+  cursor: pointer;
+}
+
+.starred {
+  fill: material-color("yellow", "500");
+}
