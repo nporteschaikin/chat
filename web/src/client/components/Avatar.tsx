@@ -15,7 +15,7 @@ interface Props {
 }
 
 const Avatar: React.FC<Props> = ({ url, size, state, style }) => (
-  <div style={{ ...style, width: `${size}px` }} className={styles.root}>
+  <div style={{ ...style, width: `${size}px`, height: `${size}px` }} className={styles.root}>
     {url !== null && <img src={url} />}
     {state && <div className={classnames(styles.state, styles[state])} />}
   </div>
