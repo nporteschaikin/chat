@@ -3,7 +3,7 @@ import * as React from "react"
 // @ts-ignore
 import styles from "./../styles/text-field.module"
 
-interface Props {
+export interface Props {
   type?: string
   defaultValue?: string
   placeholder?: string

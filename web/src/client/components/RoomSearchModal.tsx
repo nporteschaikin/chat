@@ -6,8 +6,8 @@ import { store } from "./../store"
 import { searchRooms, fetchPopularRooms } from "./../actions"
 import { Room } from "./../types"
 import Modal, { ModalManager } from "./Modal"
-import Dialog, { DialogHeader, DialogBody } from "./Dialog"
-import TextField from "./TextField"
+import Dialog, { DialogHeader, DialogBody, DialogFooter } from "./Dialog"
+import KeyboardTextField from "./KeyboardTextField"
 import HeroMessage from "./HeroMessage"
 
 // @ts-ignore
@@ -44,80 +44,59 @@ const RoomSearchModal: React.FC<Props> = ({ isVisible, onClick, onNavigate }) =>
   const [query, setQuery] = React.useState<string>("")
   const [selectedRoomIndex, setSelectedRoomIndex] = React.useState<number>(0)
   const history = useHistory()
-  const ref = React.useRef<HTMLInputElement>()
 
   const trimmedQuery = query.trim()
   const isPopularVisible = trimmedQuery.length === 0
   const rooms = isPopularVisible ? state.popularRooms : state.searchedRooms
   const onChange = (event) => setQuery(event.target.value)
-
-  const onKeyDown = (event) => {
-    event.stopPropagation()
-
-    switch (event.keyCode) {
-      case 38: {
-        event.preventDefault()
-        setSelectedRoomIndex(selectedRoomIndex - 1)
-        return
-      }
-      case 9:
-      case 40: {
-        event.preventDefault()
-        setSelectedRoomIndex(selectedRoomIndex + 1 >= rooms.length ? 0 : selectedRoomIndex + 1)
-        return
-      }
-      case 13: {
-        event.preventDefault()
-        onNavigate()
-        history.push(`/r/${rooms[selectedRoomIndex].handle}`)
-        return
-      }
-    }
+  const onSelect = () => {
+    onNavigate()
+    history.push(`/r/${rooms[selectedRoomIndex].handle}`)
   }
 
-  React.useEffect(() => {
-    isVisible && ref.current!.focus()
-  }, [isVisible])
   React.useEffect(() => {
     isVisible && dispatch(fetchPopularRooms())
   }, [isVisible])
   React.useEffect(() => dispatch(searchRooms(trimmedQuery)), [trimmedQuery])
   React.useEffect(() => setSelectedRoomIndex(0), [rooms.length])
-  React.useEffect(() => {
-    ref.current!.addEventListener("keydown", onKeyDown)
-
-    return () => {
-      ref.current!.removeEventListener("keydown", onKeyDown)
-    }
-  }, [selectedRoomIndex, rooms.length])
 
   return (
     <Modal isVisible={isVisible} onClick={onClick}>
       <Dialog>
         <DialogHeader>
-          <TextField
-            ref={ref}
+          <KeyboardTextField
+            onUp={() => setSelectedRoomIndex(selectedRoomIndex === 0 ? 0 : selectedRoomIndex - 1)}
+            onDown={() =>
+              setSelectedRoomIndex(
+                selectedRoomIndex + 1 >= rooms.length ? 0 : selectedRoomIndex + 1
+              )
+            }
+            onSelect={onSelect}
             type="search"
             placeholder="Where to?"
             defaultValue={query}
             onChange={onChange}
+            isActive={isVisible}
           />
         </DialogHeader>
         {rooms.length > 0 ? (
-          <DialogBody>
-            {isPopularVisible && <h5 className={styles["popular-header"]}>Popular right now</h5>}
-            {rooms.slice(0, 5).map((room, index) => (
-              <RoomLink
-                key={room.handle}
-                isSelected={selectedRoomIndex === index}
-                room={room}
-                onClick={() => {
-                  setSelectedRoomIndex(index)
-                  onNavigate()
-                }}
-              />
-            ))}
-          </DialogBody>
+          <>
+            <DialogBody>
+              {isPopularVisible && <h5 className={styles["popular-header"]}>Popular right now</h5>}
+              {rooms.slice(0, 5).map((room, index) => (
+                <RoomLink
+                  key={room.handle}
+                  isSelected={selectedRoomIndex === index}
+                  room={room}
+                  onClick={() => {
+                    setSelectedRoomIndex(index)
+                    onNavigate()
+                  }}
+                />
+              ))}
+            </DialogBody>
+            <DialogFooter>Tab or down to navigate down; up to navigate up.</DialogFooter>
+          </>
         ) : (
           <DialogBody>
             <RoomSearchEmpty />

@@ -18,13 +18,31 @@ interface ManagerProps {
 export const ModalManager: React.SFC<ManagerProps> = ({ children }) => {
   const [isVisible, setVisible] = React.useState<boolean>(false)
 
+  const onKeyDown = (event) => {
+    console.log(event.keyCode)
+
+    switch (event.keyCode) {
+      case 27: {
+        setVisible(false)
+      }
+    }
+  }
+
+  React.useEffect(() => {
+    document.body.addEventListener("keydown", onKeyDown)
+
+    return () => {
+      document.body.removeEventListener("keydown", onKeyDown)
+    }
+  }, [isVisible])
+
   return children(isVisible, setVisible)
 }
 
 // @ts-ignore
 const Modal: React.FC<Props> = React.forwardRef<React.FC<Props>>(
   // @ts-ignore
-  ({ isVisible, children, ...rest }, ref) =>
+  ({ isVisible, setVisible, children, ...rest }, ref) =>
     createPortal(
       <div
         // @ts-ignore
