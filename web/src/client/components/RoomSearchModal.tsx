@@ -7,7 +7,7 @@ import { searchRooms, fetchPopularRooms } from "./../actions"
 import { Room } from "./../types"
 import Modal, { ModalManager } from "./Modal"
 import Dialog, { DialogHeader, DialogBody, DialogFooter } from "./Dialog"
-import KeyboardTextField from "./KeyboardTextField"
+import KeyboardTextField, { KeyboardTextFieldLegend } from "./KeyboardTextField"
 import HeroMessage from "./HeroMessage"
 
 // @ts-ignore
@@ -95,7 +95,9 @@ const RoomSearchModal: React.FC<Props> = ({ isVisible, onClick, onNavigate }) =>
                 />
               ))}
             </DialogBody>
-            <DialogFooter>Tab or down to navigate down; up to navigate up.</DialogFooter>
+            <DialogFooter>
+              <KeyboardTextFieldLegend />
+            </DialogFooter>
           </>
         ) : (
           <DialogBody>

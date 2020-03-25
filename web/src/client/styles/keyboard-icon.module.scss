@@ -1,0 +1,18 @@
+@import "sass-material-colors";
+
+.root {
+  font-size: 0.95rem;
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid material-color("grey", "400");
+  border-bottom-width: 3px;
+  border-radius: 3px;
+  line-height: 1;
+  color: 1px solid material-color("grey", "400");
+  margin-right: 0.25rem;
+
+  svg {
+    vertical-align: top;
+    fill: 1px solid material-color("grey", "400");
+  }
+}

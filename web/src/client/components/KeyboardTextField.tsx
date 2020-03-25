@@ -1,6 +1,10 @@
 import * as React from "react"
 
 import TextField, { Props as TextFieldProps } from "./TextField"
+import KeyboardIcon, { KeyboardIconType } from "./KeyboardIcon"
+
+// @ts-ignore
+import styles from "./../styles/keyboard-text-field.module"
 
 interface Props extends TextFieldProps {
   onUp: () => void
@@ -8,6 +12,23 @@ interface Props extends TextFieldProps {
   onSelect: () => void
   isActive: boolean
 }
+
+export const KeyboardTextFieldLegend: React.SFC = () => (
+  <div className={styles.legend}>
+    <div>
+      <KeyboardIcon type={KeyboardIconType.Tab} />
+      <KeyboardIcon type={KeyboardIconType.UpArrow} />
+      <KeyboardIcon type={KeyboardIconType.DownArrow} />
+    </div>
+    <div>to navigate</div>
+    <div className={styles["legend-dismiss"]}>
+      <div>
+        <KeyboardIcon type={KeyboardIconType.Esc} />
+      </div>
+      <div>to dismiss</div>
+    </div>
+  </div>
+)
 
 const KeyboardTextField: React.SFC<Props> = ({ onUp, onDown, onSelect, isActive, ...rest }) => {
   const ref = React.useRef<HTMLInputElement>()

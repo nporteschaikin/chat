@@ -19,8 +19,6 @@ export const ModalManager: React.SFC<ManagerProps> = ({ children }) => {
   const [isVisible, setVisible] = React.useState<boolean>(false)
 
   const onKeyDown = (event) => {
-    console.log(event.keyCode)
-
     switch (event.keyCode) {
       case 27: {
         setVisible(false)
