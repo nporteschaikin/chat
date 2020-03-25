@@ -1,8 +1,9 @@
 import * as React from "react"
 
-import Message from "./Message"
 import { Room } from "./../types"
 import { store } from "./../store"
+import { LoadingScreen } from "./Loader"
+import Message from "./Message"
 
 // @ts-ignore
 import styles from "./../styles/room.module"
@@ -13,7 +14,7 @@ const RoomMessages: React.FC<{ room: Room }> = ({ room }) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const { current } = ref
 
-  const messages = state.roomMessages[room.handle] || []
+  const messages = state.roomMessages[room.handle]
   const onMessagesLengthChange = () => {
     if (current === null) return
 
@@ -24,7 +25,11 @@ const RoomMessages: React.FC<{ room: Room }> = ({ room }) => {
     }
   }
 
-  React.useEffect(onMessagesLengthChange, [messages.length])
+  React.useEffect(onMessagesLengthChange, [(messages || []).length])
+
+  if (!messages) {
+    return <LoadingScreen />
+  }
 
   return (
     <div className={styles.messages} ref={ref}>
