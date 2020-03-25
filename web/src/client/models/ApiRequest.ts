@@ -5,6 +5,7 @@ import * as snakeize from "snakecase-keys"
 export enum ApiRequestMethod {
   GET = "GET",
   POST = "POST",
+  DELETE = "DELETE",
 }
 
 class ApiResponseError extends Error {

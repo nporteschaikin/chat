@@ -11,6 +11,7 @@ const initialState = {
   isAuthenticated: false,
   authenticatedUser: null,
   authenticatedToken: null,
+  currentRoomHandle: null,
   popularRooms: [],
   rooms: [],
   roomSubscriptions: {},
@@ -24,6 +25,12 @@ const initialState = {
     isInvalid: false,
   },
 }
+
+// Helper to replace objects
+const pushOrReplace = (arr: any[], newObj: any, compare: (oldObj: any, newObj: any) => boolean) =>
+  arr.findIndex((o) => compare(o, newObj)) > -1
+    ? arr.map((o) => (compare(o, newObj) ? newObj : o))
+    : [...arr, newObj]
 
 const reducer = (state, action) => {
   switch (action.type) {
@@ -145,19 +152,15 @@ const reducer = (state, action) => {
       }
     }
     case Types.RoomKeydownReceived: {
-      const oldKeydowns = state.roomKeydowns[action.handle] || []
-      const newKeydowns =
-        oldKeydowns.findIndex((keydown) => keydown.userId === action.keydown.userId) > -1
-          ? oldKeydowns.map((keydown) =>
-              keydown.userId === action.keydown.userId ? keydown : keydown
-            )
-          : [...oldKeydowns, action.keydown]
-
       return {
         ...state,
         roomKeydowns: {
           ...state.roomKeydowns,
-          [action.handle]: newKeydowns,
+          [action.handle]: pushOrReplace(
+            state.roomKeydowns[action.handle],
+            action.keydown,
+            (oldKeydown, newKeydown) => oldKeydown.id === newKeydown.id
+          ),
         },
       }
     }
@@ -193,15 +196,46 @@ const reducer = (state, action) => {
         },
       }
     }
-    case Types.RoomFetched:
-    case Types.ToggledRoomStar:
+    case Types.RoomOpening: {
+      return {
+        ...state,
+        currentRoomHandle: action.handle,
+        rooms: state.rooms.map((room) =>
+          room.handle === action.handle ? { ...room, open: true } : room
+        ),
+      }
+    }
+    case Types.RoomClosing: {
+      return {
+        ...state,
+        rooms: state.rooms.map((room) =>
+          room.handle === action.handle ? { ...room, open: false } : room
+        ),
+      }
+    }
     case Types.RoomOpened: {
       return {
         ...state,
-        rooms:
-          state.rooms.findIndex((room) => room.id === action.room.id) > -1
-            ? state.rooms.map((room) => (room.id === action.room.id ? action.room : room))
-            : [...state.rooms, action.room],
+        rooms: pushOrReplace(
+          state.rooms,
+          action.room,
+          (oldRoom, newRoom) => newRoom.id === oldRoom.id
+        ),
+      }
+    }
+    case Types.RoomClosed: {
+      return {
+        ...state,
+        rooms: pushOrReplace(
+          state.rooms,
+          action.room,
+          (oldRoom, newRoom) => newRoom.id === oldRoom.id
+        ),
+      }
+    }
+    case Types.ToggledRoomStar: {
+      return {
+        ...state,
         roomStarToggles: {
           ...state.roomStarToggles,
           [action.room.handle]: false,

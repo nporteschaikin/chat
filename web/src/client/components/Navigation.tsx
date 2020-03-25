@@ -2,8 +2,10 @@ import * as React from "react"
 import classnames from "classnames"
 import { Link, useLocation } from "react-router-dom"
 import { AiOutlineSearch } from "react-icons/ai"
+import { IoMdCloseCircleOutline } from "react-icons/io"
 
 import { store } from "./../store"
+import { closeRoom } from "./../actions"
 import { Room } from "./../types"
 import UserAvatar from "./UserAvatar"
 import RoomSearchModal, { RoomSearchModalManager } from "./RoomSearchModal"
@@ -50,13 +52,20 @@ const NavigationSearchButton: React.FC = () => (
   </RoomSearchModalManager>
 )
 
-const NavigationRoomLink: React.FC<{ room: Room }> = (props) => {
+const NavigationRoomLink: React.FC<{ room: Room; showCloseButton: boolean }> = (props) => {
+  const { dispatch } = React.useContext(store)
   const location = useLocation()
   const path = `/r/${props.room.handle}`
   const isCurrent = path === location.pathname
 
+  const onClickClose = (event) => {
+    event.stopPropagation()
+    dispatch(closeRoom(props.room.handle))
+  }
+
   return (
-    <div>
+    <div className={styles["room-link"]}>
+      {props.showCloseButton && !isCurrent && <IoMdCloseCircleOutline onClick={onClickClose} />}
       <Link className={classnames({ [styles.current]: isCurrent })} to={path}>
         #{props.room.handle}
       </Link>
@@ -64,16 +73,18 @@ const NavigationRoomLink: React.FC<{ room: Room }> = (props) => {
   )
 }
 
-const NavigationRoomSection: React.FC<{ rooms: Room[]; title?: string; className?: string }> = (
-  props
-) => {
+const NavigationRoomSection: React.FC<{
+  rooms: Room[]
+  title?: string
+  showCloseButton: boolean
+}> = (props) => {
   if (props.rooms.length === 0) return null
 
   return (
-    <div className={classnames(styles.section, props.className)}>
+    <div className={styles.section}>
       {!!props.title && <h4>{props.title}</h4>}
       {props.rooms.map((room) => (
-        <NavigationRoomLink key={room.id} room={room} />
+        <NavigationRoomLink key={room.id} room={room} showCloseButton={props.showCloseButton} />
       ))}
     </div>
   )
@@ -90,12 +101,13 @@ const Navigation: React.FC = () => {
         {rooms !== null && (
           <>
             <NavigationRoomSection
-              rooms={rooms.filter((room) => room.open)}
-              className={styles.opened}
+              rooms={rooms.filter((room) => room.open && !room.starred)}
+              showCloseButton={true}
             />
             <NavigationRoomSection
               title="Starred"
-              rooms={rooms.filter((room) => room.starred && !room.open)}
+              rooms={rooms.filter((room) => room.starred)}
+              showCloseButton={false}
             />
           </>
         )}

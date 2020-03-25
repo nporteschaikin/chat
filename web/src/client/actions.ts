@@ -15,7 +15,8 @@ export enum Types {
   LoginInvalid,
   PopularRoomsFetched,
   Registered,
-  RoomFetched,
+  RoomClosed,
+  RoomClosing,
   RoomKeydownReceived,
   RoomKeydownSent,
   RoomKeydownTimedOut,
@@ -24,13 +25,14 @@ export enum Types {
   RoomMessageUpdated,
   RoomMessagesFetched,
   RoomOpened,
+  RoomOpening,
   SearchedRoomsFetched,
   SubscribedToRoom,
   SubscribedToUserState,
+  ToggledRoomStar,
+  TogglingRoomStar,
   TokenCookieFound,
   UserStateReceived,
-  TogglingRoomStar,
-  ToggledRoomStar,
 }
 
 const TOKEN_COOKIE_NAME = "token"
@@ -240,15 +242,6 @@ export const subscribeToUserState = (handle) => (dispatch, getState) => {
   subscription.connect()
 }
 
-export const fetchRoom = (handle) => (dispatch, getState) => {
-  const { authenticatedToken } = getState()
-  const req = new ApiRequest<Room[]>(ApiRequestMethod.GET, `/rooms/${handle}`, {
-    authenticatedToken,
-  })
-
-  return req.execute().then((room) => dispatch({ type: Types.RoomFetched, handle, room }))
-}
-
 export const fetchRoomMessages = (handle) => (dispatch, getState) => {
   const { authenticatedToken } = getState()
   const req = new ApiRequest<Message[]>(ApiRequestMethod.GET, `/rooms/${handle}/messages`, {
@@ -261,16 +254,20 @@ export const fetchRoomMessages = (handle) => (dispatch, getState) => {
 }
 
 export const openRoom = (handle) => (dispatch, getState) => {
-  dispatch(fetchRoom(handle))
-    .then(() => dispatch(fetchRoomMessages(handle)))
-    .then(() => dispatch(subscribeToRoom(handle)))
-    .then(() => {
-      const req = new ApiRequest<Message[]>(ApiRequestMethod.POST, `/rooms/${handle}/open`, {
-        authenticatedToken: getState().authenticatedToken,
-      })
-      return req.execute()
-    })
-    .then((room) => dispatch({ type: Types.RoomOpened, room }))
+  dispatch({
+    type: Types.RoomOpening,
+    handle,
+  })
+
+  const req = new ApiRequest<Message[]>(ApiRequestMethod.POST, `/rooms/${handle}/open`, {
+    authenticatedToken: getState().authenticatedToken,
+  })
+
+  req.execute().then((room) =>
+    dispatch(fetchRoomMessages(handle))
+      .then(() => dispatch(subscribeToRoom(handle)))
+      .then(() => dispatch({ type: Types.RoomOpened, room }))
+  )
 }
 
 export const fetchPopularRooms = () => (dispatch, getState) => {
@@ -305,4 +302,19 @@ export const toggleRoomStar = (handle) => (dispatch, getState) => {
 
     req.execute().then((room) => dispatch({ type: Types.ToggledRoomStar, room }))
   }
+}
+
+export const closeRoom = (handle) => (dispatch, getState) => {
+  dispatch({
+    type: Types.RoomClosing,
+    handle,
+  })
+
+  const { authenticatedToken } = getState()
+
+  const req = new ApiRequest<Room[]>(ApiRequestMethod.DELETE, `/rooms/${handle}/close`, {
+    authenticatedToken,
+  })
+
+  req.execute().then((room) => dispatch({ type: Types.RoomClosed, room }))
 }

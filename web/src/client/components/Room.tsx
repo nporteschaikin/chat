@@ -16,11 +16,10 @@ import styles from "./../styles/room.module"
 const Room: React.FC = () => {
   const { handle } = useParams()
   const { state, dispatch } = React.useContext(store)
+  const { rooms } = state
+  const room: RoomType | undefined = rooms.find((room) => room.handle === handle)
 
   React.useEffect(() => dispatch(openRoom(handle!)), [handle!])
-
-  const room: RoomType | undefined =
-    state.rooms !== null && state.rooms.find((room) => room.handle === handle)
 
   return (
     <Dashboard>

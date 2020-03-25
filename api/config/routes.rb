@@ -7,7 +7,7 @@ Rails.application.routes.draw do
   resources :rooms, only: %i(index show) do
     member do
       post :open
-      post :close
+      delete :close
       post :star
     end
 
