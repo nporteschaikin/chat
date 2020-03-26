@@ -5,11 +5,6 @@ Rails.application.routes.draw do
   resource :manifest, only: %i(show)
 
   resources :rooms, only: %i(index show) do
-    member do
-      post :open
-      delete :close
-    end
-
     collection do
       get :search
       get :popular
@@ -18,6 +13,7 @@ Rails.application.routes.draw do
     scope module: :rooms do
       resources :messages, only: %i(index create)
       resource :star, only: %i(create destroy)
+      resource :open, only: %i(create destroy)
     end
   end
 end

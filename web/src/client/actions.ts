@@ -263,10 +263,10 @@ export const openRoom = (handle) => (dispatch, getState) => {
     authenticatedToken: getState().authenticatedToken,
   })
 
-  req.execute().then((room) =>
+  req.execute().then((open) =>
     dispatch(fetchRoomMessages(handle))
       .then(() => dispatch(subscribeToRoom(handle)))
-      .then(() => dispatch({ type: Types.RoomOpened, room }))
+      .then(() => dispatch({ type: Types.RoomOpened, open }))
   )
 }
 
@@ -313,9 +313,9 @@ export const closeRoom = (handle) => (dispatch, getState) => {
 
   const { authenticatedToken } = getState()
 
-  const req = new ApiRequest<Room[]>(ApiRequestMethod.DELETE, `/rooms/${handle}/close`, {
+  const req = new ApiRequest<Room[]>(ApiRequestMethod.DELETE, `/rooms/${handle}/open`, {
     authenticatedToken,
   })
 
-  req.execute().then((room) => dispatch({ type: Types.RoomClosed, room }))
+  req.execute().then((open) => dispatch({ type: Types.RoomClosed, open }))
 }

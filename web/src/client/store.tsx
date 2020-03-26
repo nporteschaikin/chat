@@ -203,7 +203,6 @@ const reducer = (state, action) => {
       }
     }
     case Types.RoomStarSet: {
-      console.log(action)
       return {
         ...state,
         rooms: pushOrReplace(
@@ -219,7 +218,7 @@ const reducer = (state, action) => {
         ...state,
         rooms: pushOrReplace(
           state.rooms,
-          action.room,
+          action.open.room,
           (oldRoom, newRoom) => newRoom.id === oldRoom.id
         ),
       }

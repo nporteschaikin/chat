@@ -13,10 +13,7 @@ class User < ApplicationRecord
 
   attribute :state, :string, default: NEW
 
-  after_create do
-    room = Room.find_general!
-    room.open_for!(self)
-  end
+  after_create { open_room!(Room.find_general!) }
 
   after_save do
     if saved_change_to_state?

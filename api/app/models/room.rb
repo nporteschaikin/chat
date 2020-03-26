@@ -74,12 +74,16 @@ class Room < ApplicationRecord
     open_rooms.where(user: user).any?
   end
 
-  def open_for!(user)
-    open_rooms.find_or_create_by!(user: user).touch
+  def open!(user)
+    open_rooms.find_or_create_by!(user: user).tap(&:touch)
+  end
+
+  def close!(user)
+    open_rooms.find_by!(user: user).destroy
   end
 
   def star!(user)
-    stars.create!(user: user)
+    stars.find_or_create_by!(user: user)
   end
 
   def unstar!(user)
