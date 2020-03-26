@@ -3,7 +3,7 @@ import classnames from "classnames"
 import { AiFillStar } from "react-icons/ai"
 
 import { store } from "./../store"
-import { toggleRoomStar } from "./../actions"
+import { setRoomStar } from "./../actions"
 import { Room } from "./../types"
 
 // @ts-ignore
@@ -12,7 +12,7 @@ import styles from "./../styles/room-star.module"
 const RoomStar: React.FC<{ room: Room }> = ({ room }) => {
   const { dispatch } = React.useContext(store)
 
-  const toggleStar = () => dispatch(toggleRoomStar(room.handle))
+  const toggleStar = () => dispatch(setRoomStar(room.handle, !room.starred))
 
   return (
     <AiFillStar

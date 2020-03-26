@@ -17,7 +17,6 @@ const initialState = {
   roomSubscriptions: {},
   roomKeydowns: {},
   roomMessages: {},
-  roomStarToggles: {},
   searchedRooms: [],
   userStateSubscriptions: {},
   userStates: {},
@@ -76,7 +75,6 @@ const reducer = (state, action) => {
         rooms: null,
         roomMessages: {},
         roomKeydowns: {},
-        roomStarToggles: {},
         subscriptions: {},
         userStateSubscriptions: {},
       }
@@ -187,15 +185,6 @@ const reducer = (state, action) => {
         searchedRooms: action.rooms,
       }
     }
-    case Types.TogglingRoomStar: {
-      return {
-        ...state,
-        roomStarToggles: {
-          ...state.roomStarToggles,
-          [action.handle]: true,
-        },
-      }
-    }
     case Types.RoomOpening: {
       return {
         ...state,
@@ -205,24 +194,26 @@ const reducer = (state, action) => {
         ),
       }
     }
-    case Types.RoomClosing: {
+    case Types.RoomStarSetting: {
       return {
         ...state,
         rooms: state.rooms.map((room) =>
-          room.handle === action.handle ? { ...room, open: false } : room
+          room.handle === action.handle ? { ...room, starred: action.starred } : room
         ),
       }
     }
-    case Types.RoomOpened: {
+    case Types.RoomStarSet: {
+      console.log(action)
       return {
         ...state,
         rooms: pushOrReplace(
           state.rooms,
-          action.room,
+          action.star.room,
           (oldRoom, newRoom) => newRoom.id === oldRoom.id
         ),
       }
     }
+    case Types.RoomOpened:
     case Types.RoomClosed: {
       return {
         ...state,
@@ -231,15 +222,6 @@ const reducer = (state, action) => {
           action.room,
           (oldRoom, newRoom) => newRoom.id === oldRoom.id
         ),
-      }
-    }
-    case Types.ToggledRoomStar: {
-      return {
-        ...state,
-        roomStarToggles: {
-          ...state.roomStarToggles,
-          [action.room.handle]: false,
-        },
       }
     }
     default: {

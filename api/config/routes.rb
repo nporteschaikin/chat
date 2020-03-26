@@ -8,7 +8,6 @@ Rails.application.routes.draw do
     member do
       post :open
       delete :close
-      post :star
     end
 
     collection do
@@ -18,6 +17,7 @@ Rails.application.routes.draw do
 
     scope module: :rooms do
       resources :messages, only: %i(index create)
+      resource :star, only: %i(create destroy)
     end
   end
 end

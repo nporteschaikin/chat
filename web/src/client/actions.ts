@@ -29,8 +29,8 @@ export enum Types {
   SearchedRoomsFetched,
   SubscribedToRoom,
   SubscribedToUserState,
-  ToggledRoomStar,
-  TogglingRoomStar,
+  RoomStarSetting,
+  RoomStarSet,
   TokenCookieFound,
   UserStateReceived,
 }
@@ -291,17 +291,18 @@ export const searchRooms = (query) => (dispatch, getState) => {
   req.execute().then((rooms) => dispatch({ type: Types.SearchedRoomsFetched, rooms }))
 }
 
-export const toggleRoomStar = (handle) => (dispatch, getState) => {
-  const { authenticatedToken, roomStarToggles } = getState()
+export const setRoomStar = (handle, starred) => (dispatch, getState) => {
+  dispatch({ type: Types.RoomStarSetting, handle, starred })
 
-  if (!roomStarToggles[handle]) {
-    dispatch({ type: Types.TogglingRoomStar, handle })
-    const req = new ApiRequest<Room[]>(ApiRequestMethod.POST, `/rooms/${handle}/star`, {
-      authenticatedToken,
-    })
+  const req = new ApiRequest<Room[]>(
+    starred ? ApiRequestMethod.POST : ApiRequestMethod.DELETE,
+    `/rooms/${handle}/star`,
+    {
+      authenticatedToken: getState().authenticatedToken,
+    }
+  )
 
-    req.execute().then((room) => dispatch({ type: Types.ToggledRoomStar, room }))
-  }
+  req.execute().then((star) => dispatch({ type: Types.RoomStarSet, star }))
 }
 
 export const closeRoom = (handle) => (dispatch, getState) => {

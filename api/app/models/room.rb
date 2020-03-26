@@ -78,13 +78,11 @@ class Room < ApplicationRecord
     open_rooms.find_or_create_by!(user: user).touch
   end
 
-  def close_for!(user)
-    open_rooms.where(user: user).delete_all
+  def star!(user)
+    stars.create!(user: user)
   end
 
-  def toggle_star_for!(user)
-    if stars.where(user: user).delete_all == 0
-      stars.create!(user: user)
-    end
+  def unstar!(user)
+    stars.find_by!(user: user).destroy
   end
 end

@@ -32,11 +32,4 @@ class RoomsController < ApplicationController
 
     render json: RoomSerializer.render(room, user: current_user)
   end
-
-  def star
-    room = Room.find_by!(handle: params.fetch(:id))
-    room.toggle_star_for!(current_user)
-
-    render json: RoomSerializer.render(room, user: current_user)
-  end
 end
