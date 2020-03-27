@@ -3,7 +3,8 @@ import Cookies from "universal-cookie"
 
 import ApiRequest, { ApiRequestMethod } from "./models/ApiRequest"
 import Subscription from "./models/Subscription"
-import { Room, Manifest, Message, UserToken, RegistrationForm } from "./types"
+import { Room, RoomPath, Manifest, Message, UserToken, User, RegistrationForm } from "./types"
+import { buildRoomApiUrlFromRoom, buildRoomApiUrlFromPath } from "./helpers/rooms"
 
 export enum Types {
   AppBooted,
@@ -26,7 +27,7 @@ export enum Types {
   RoomMessageUpdated,
   RoomMessagesFetched,
   RoomOpened,
-  RoomOpening,
+  RoomOpeningByPath,
   SearchedRoomsFetched,
   SubscribedToRoom,
   SubscribedToUserState,
@@ -38,6 +39,8 @@ export enum Types {
 
 const TOKEN_COOKIE_NAME = "token"
 
+// path helpers
+// actions
 export const boot = () => (dispatch) => {
   const cookies = new Cookies()
   const token = cookies.get(TOKEN_COOKIE_NAME)
@@ -142,58 +145,62 @@ enum RoomAction {
   Keydown = "keydown",
 }
 
-export const receiveRoomKeydown = (handle, keydown) => (dispatch, getState) => {
+export const receiveRoomKeydown = (room, keydown) => (dispatch, getState) => {
   const { roomKeydowns } = getState()
-  const existing = (roomKeydowns[handle] || []).find((key) => key.userId === keydown.userId)
+  const existing = (roomKeydowns[room.id] || []).find((key) => key.userId === keydown.userId)
 
   const timeout = (() =>
     existing
       ? existing.timeout
-      : setTimeout(() => dispatch({ type: Types.RoomKeydownTimedOut, handle, keydown }), 2000))()
+      : setTimeout(() => dispatch({ type: Types.RoomKeydownTimedOut, room, keydown }), 2000))()
 
   dispatch({
     type: Types.RoomKeydownReceived,
-    handle,
+    room,
     keydown: { ...keydown, timeout },
   })
 }
 
-export const subscribeToRoom = (handle) => (dispatch, getState) => {
+export const subscribeToRoom = (room: Room) => (dispatch, getState) => {
   const state = getState()
   const { consumer } = state
-  const oldSubscription = state.roomSubscriptions[handle]
+  const oldSubscription = state.roomSubscriptions[room.id]
 
   if (!!oldSubscription) return
 
-  const subscription = new Subscription(consumer, "RoomChannel", { handle })
+  const subscription = new Subscription(consumer, "RoomChannel", { id: room.id })
 
-  subscription.onConnected(() => dispatch({ type: Types.SubscribedToRoom, handle, subscription }))
+  subscription.onConnected(() => dispatch({ type: Types.SubscribedToRoom, room, subscription }))
   subscription.on(RoomEventType.MessageCreated, (message) =>
     dispatch({
       type: Types.RoomMessageReceived,
-      handle,
+      room,
       message,
     })
   )
   subscription.on(RoomEventType.MessageUpdated, (message) =>
     dispatch({
       type: Types.RoomMessageUpdated,
-      handle,
+      room,
       message,
     })
   )
-  subscription.on(RoomEventType.Keydown, (keydown) => dispatch(receiveRoomKeydown(handle, keydown)))
+  subscription.on(RoomEventType.Keydown, (keydown) => dispatch(receiveRoomKeydown(room, keydown)))
 
   subscription.connect()
 }
 
-export const sendRoomMessage = (handle, body) => (dispatch, getState) => {
+export const sendRoomMessage = (room, body) => (dispatch, getState) => {
   const { authenticatedToken } = getState()
 
-  const req = new ApiRequest<Message[]>(ApiRequestMethod.POST, `/rooms/${handle}/messages`, {
-    authenticatedToken,
-    json: { body },
-  })
+  const req = new ApiRequest<Message[]>(
+    ApiRequestMethod.POST,
+    buildRoomApiUrlFromRoom(room, "messages"),
+    {
+      authenticatedToken,
+      json: { body },
+    }
+  )
 
   req.execute().then((message) =>
     dispatch({
@@ -203,9 +210,9 @@ export const sendRoomMessage = (handle, body) => (dispatch, getState) => {
   )
 }
 
-export const sendRoomKeydown = (handle) => (_, getState) => {
+export const sendRoomKeydown = (room) => (_, getState) => {
   const { roomSubscriptions } = getState()
-  const subscription = roomSubscriptions[handle]
+  const subscription = roomSubscriptions[room.id]
 
   if (subscription) {
     subscription.perform(RoomAction.Keydown)
@@ -220,22 +227,22 @@ enum UserStateEventType {
   Changed = "ChangedEvent",
 }
 
-export const subscribeToUserState = (handle) => (dispatch, getState) => {
+export const subscribeToUserState = (user) => (dispatch, getState) => {
   const state = getState()
   const { consumer } = state
-  const oldSubscription = state.userStateSubscriptions[handle]
+  const oldSubscription = state.userStateSubscriptions[user.id]
 
   if (!!oldSubscription) return
 
-  const subscription = new Subscription(consumer, "UserStateChannel", { handle })
+  const subscription = new Subscription(consumer, "UserStateChannel", { id: user.id })
 
   subscription.onConnected(() =>
-    dispatch({ type: Types.SubscribedToUserState, handle, subscription })
+    dispatch({ type: Types.SubscribedToUserState, user, subscription })
   )
   subscription.on(UserStateEventType.Changed, (state) =>
     dispatch({
       type: Types.UserStateReceived,
-      handle,
+      user,
       state,
     })
   )
@@ -243,30 +250,38 @@ export const subscribeToUserState = (handle) => (dispatch, getState) => {
   subscription.connect()
 }
 
-export const fetchRoomMessages = (handle) => (dispatch, getState) => {
+export const fetchRoomMessages = (room) => (dispatch, getState) => {
   const { authenticatedToken } = getState()
-  const req = new ApiRequest<Message[]>(ApiRequestMethod.GET, `/rooms/${handle}/messages`, {
-    authenticatedToken,
-  })
+  const req = new ApiRequest<Message[]>(
+    ApiRequestMethod.GET,
+    buildRoomApiUrlFromRoom(room, "messages"),
+    {
+      authenticatedToken,
+    }
+  )
 
   return req
     .execute()
-    .then((messages) => dispatch({ type: Types.RoomMessagesFetched, handle, messages }))
+    .then((messages) => dispatch({ type: Types.RoomMessagesFetched, room, messages }))
 }
 
-export const openRoom = (handle) => (dispatch, getState) => {
+export const openRoomByPath = (path: RoomPath) => (dispatch, getState) => {
   dispatch({
-    type: Types.RoomOpening,
-    handle,
+    type: Types.RoomOpeningByPath,
+    path,
   })
 
-  const req = new ApiRequest<Message[]>(ApiRequestMethod.POST, `/rooms/${handle}/open`, {
-    authenticatedToken: getState().authenticatedToken,
-  })
+  const req = new ApiRequest<{ room: Room; user: User }>(
+    ApiRequestMethod.POST,
+    buildRoomApiUrlFromPath(path, "open"),
+    {
+      authenticatedToken: getState().authenticatedToken,
+    }
+  )
 
   req.execute().then((open) =>
-    dispatch(fetchRoomMessages(handle))
-      .then(() => dispatch(subscribeToRoom(handle)))
+    dispatch(fetchRoomMessages(open.room))
+      .then(() => dispatch(subscribeToRoom(open.room)))
       .then(() => dispatch({ type: Types.RoomOpened, open }))
   )
 }
@@ -292,12 +307,12 @@ export const searchRooms = (query) => (dispatch, getState) => {
   req.execute().then((rooms) => dispatch({ type: Types.SearchedRoomsFetched, rooms }))
 }
 
-export const setRoomStar = (handle, starred) => (dispatch, getState) => {
-  dispatch({ type: Types.RoomStarSetting, handle, starred })
+export const setRoomStar = (room, starred) => (dispatch, getState) => {
+  dispatch({ type: Types.RoomStarSetting, room, starred })
 
   const req = new ApiRequest<Room[]>(
     starred ? ApiRequestMethod.POST : ApiRequestMethod.DELETE,
-    `/rooms/${handle}/star`,
+    buildRoomApiUrlFromRoom(room, "star"),
     {
       authenticatedToken: getState().authenticatedToken,
     }
@@ -306,14 +321,14 @@ export const setRoomStar = (handle, starred) => (dispatch, getState) => {
   req.execute().then((star) => dispatch({ type: Types.RoomStarSet, star }))
 }
 
-export const closeRoom = (handle) => (dispatch, getState) => {
+export const closeRoom = (room) => (dispatch, getState) => {
   dispatch({
     type: Types.RoomClosing,
-    handle,
+    room,
   })
 
   const { authenticatedToken } = getState()
-  const req = new ApiRequest<Room[]>(ApiRequestMethod.DELETE, `/rooms/${handle}/open`, {
+  const req = new ApiRequest<Room[]>(ApiRequestMethod.DELETE, buildRoomApiUrlFromRoom(room), {
     authenticatedToken,
   })
 

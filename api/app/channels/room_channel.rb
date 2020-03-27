@@ -22,13 +22,13 @@ class RoomChannel < ApplicationCable::Channel
   end
 
   def subscribed
-    room = Room.find_by!(handle: params.fetch(:handle))
+    room = current_user.visible_rooms.find(params.fetch(:id))
     stream_for(room)
   end
 
   def keydown
     self.class.broadcast_event_to(
-      Room.find_by!(handle: params.fetch(:handle)),
+      current_user.visible_rooms.find(params.fetch(:id)),
       KeydownEvent,
       KeydownSerializer.render_as_hash(
         Keydown.new(current_user, Time.now),

@@ -12,7 +12,7 @@ import styles from "./../styles/room-star.module"
 const RoomStar: React.FC<{ room: Room }> = ({ room }) => {
   const { dispatch } = React.useContext(store)
 
-  const toggleStar = () => dispatch(setRoomStar(room.handle, !room.starred))
+  const toggleStar = () => dispatch(setRoomStar(room, !room.starred))
 
   return (
     <AiFillStar

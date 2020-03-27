@@ -1,6 +1,4 @@
 class RoomSerializer < ApplicationSerializer
-  include Rails.application.routes.url_helpers
-
   fields *%i(
     description
     formatted_handle
@@ -19,17 +17,4 @@ class RoomSerializer < ApplicationSerializer
   end
 
   association :location, blueprint: LocationSerializer
-
-  field :api_url do |room|
-    helpers = Rails.application.routes.url_helpers
-
-    if (location = room.location).present?
-      helpers.location_room_open_url(
-        location.handle,
-        handle,
-      )
-    else
-      helpers.room_open_url(room.handle)
-    end
-  end
 end

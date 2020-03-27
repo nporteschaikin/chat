@@ -1,5 +1,6 @@
 export interface Location {
   id: number
+  handle: string
   humanName: string
 }
 
@@ -43,6 +44,11 @@ export interface Message {
   body: string
   author: User | null
   createdAt: string
+}
+
+export interface RoomPath {
+  locationHandle?: string
+  handle: string
 }
 
 export interface Room {

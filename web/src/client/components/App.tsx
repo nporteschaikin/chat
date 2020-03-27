@@ -26,7 +26,7 @@ const Router = () => {
           </Route>
           <Route path="/in" children={<Login />} />
           <Route path="/up" children={<Register />} />
-          <AuthRoute path="/r/:handle" component={Room} />
+          <AuthRoute path="/r/:locationHandle?/:handle?" component={Room} />
           <AuthRoute path="/settings/profile" component={ProfileSettings} />
           <Redirect from="/settings" to="/settings/profile" />
         </Switch>

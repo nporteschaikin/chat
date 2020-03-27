@@ -6,25 +6,24 @@ Rails.application.routes.draw do
 
   resource :manifest, only: %i(show)
 
-  resources :rooms, param: :handle, only: %i(index) do
-    collection do
-      get :search
-      get :popular
-    end
+  def room_routes
+    resources :rooms, param: :handle, only: %i(index) do
+      collection do
+        get :search
+        get :popular
+      end
 
-    scope module: :rooms do
-      resources :messages, only: %i(index create)
-      resource :star, only: %i(create destroy)
-      resource :open, only: %i(create destroy)
+      scope module: :rooms do
+        resources :messages, only: %i(index create)
+        resource :star, only: %i(create destroy)
+        resource :open, only: %i(create destroy)
+      end
     end
   end
 
+  room_routes
+
   resources :locations, param: :handle, only: %i(index) do
-    resources :rooms, param: :handle, only: %i() do
-      scope module: :rooms do
-        resource :open, only: %i(create destroy)
-        resource :star, only: %i(create destroy)
-      end
-    end
+    room_routes
   end
 end

@@ -14,7 +14,7 @@ const RoomMessages: React.FC<{ room: Room }> = ({ room }) => {
   const ref = React.useRef<HTMLDivElement>(null)
   const { current } = ref
 
-  const messages = state.roomMessages[room.handle]
+  const messages = state.roomMessages[room.id]
   const onMessagesLengthChange = () => {
     if (current === null) return
 

@@ -23,7 +23,6 @@ const Register = () => {
     password,
     locationId,
   }
-  console.log(registration)
 
   const isComplete = Object.values(registration).every((value) => value.length > 0)
 

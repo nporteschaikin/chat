@@ -24,14 +24,16 @@
   h1 {
     position: relative;
     display: inline-block;
+  }
+}
 
-    svg {
-      position: absolute;
-      top: 50%;
-      left: 100%;
-      margin-left: 0.25rem;
-      transform: translateY(-50%);
-    }
+.star {
+  vertical-align: middle;
+  display: inline-block;
+  margin-left: 0.5rem;
+
+  svg {
+    vertical-align: top;
   }
 }
 

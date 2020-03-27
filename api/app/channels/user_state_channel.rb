@@ -2,7 +2,7 @@ class UserStateChannel < ApplicationCable::Channel
   ChangedEvent = Class.new(Event)
 
   def subscribed
-    user = User.find_by!(handle: params.fetch(:handle))
+    user = User.find(params.fetch(:id))
     stream_for(user)
 
     if user == current_user && !current_user.away?
@@ -11,7 +11,7 @@ class UserStateChannel < ApplicationCable::Channel
   end
 
   def unsubscribed
-    user = User.find_by!(handle: params.fetch(:handle))
+    user = User.find(params.fetch(:id))
 
     if user == current_user && !current_user.away?
       current_user.offline!

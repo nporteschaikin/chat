@@ -5,6 +5,7 @@ import { Link, useHistory } from "react-router-dom"
 import { store } from "./../store"
 import { searchRooms, fetchPopularRooms } from "./../actions"
 import { Room } from "./../types"
+import RoomLabel from "./RoomLabel"
 import Modal, { ModalManager } from "./Modal"
 import Dialog, { DialogHeader, DialogBody, DialogFooter } from "./Dialog"
 import KeyboardTextField, { KeyboardTextFieldLegend } from "./KeyboardTextField"
@@ -30,7 +31,9 @@ const RoomLink: React.FC<{ room: Room; onClick: () => void; isSelected: boolean 
     to={`/r/${room.handle}`}
     onClick={onClick}
     className={classnames(styles.link, { [styles.selected]: isSelected })}>
-    <span>{room.formattedHandle}</span>
+    <span>
+      <RoomLabel room={room} />
+    </span>
     <span>{room.description}</span>
   </Link>
 )
@@ -85,7 +88,7 @@ const RoomSearchModal: React.FC<Props> = ({ isVisible, onClick, onNavigate }) =>
               {isPopularVisible && <h5 className={styles["popular-header"]}>Popular right now</h5>}
               {rooms.slice(0, 5).map((room, index) => (
                 <RoomLink
-                  key={room.handle}
+                  key={room.id}
                   isSelected={selectedRoomIndex === index}
                   room={room}
                   onClick={() => {

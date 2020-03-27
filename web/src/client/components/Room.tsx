@@ -6,20 +6,26 @@ import RoomHeader from "./RoomHeader"
 import RoomMessages from "./RoomMessages"
 import RoomEditor from "./RoomEditor"
 import { store } from "./../store"
-import { openRoom } from "./../actions"
-import { Room as RoomType } from "./../types"
+import { openRoomByPath } from "./../actions"
+import { Room as RoomType, RoomPath } from "./../types"
+import { isPathForRoom } from "./../helpers/rooms"
 import { LoadingScreen } from "./Loader"
 
 // @ts-ignore
 import styles from "./../styles/room.module"
 
 const Room: React.FC = () => {
-  const { handle } = useParams()
+  const { locationHandle, handle } = useParams()
   const { state, dispatch } = React.useContext(store)
   const { rooms } = state
-  const room: RoomType | undefined = rooms.find((room) => room.handle === handle)
 
-  React.useEffect(() => dispatch(openRoom(handle!)), [handle!])
+  const path: RoomPath = {
+    handle: handle ? handle : locationHandle!,
+    locationHandle: handle ? locationHandle : undefined,
+  }
+  const room: RoomType | undefined = rooms.find((room) => isPathForRoom(path, room))
+
+  React.useEffect(() => dispatch(openRoomByPath(path)), [locationHandle!, handle!])
 
   return (
     <Dashboard>

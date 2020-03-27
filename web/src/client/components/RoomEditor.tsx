@@ -16,7 +16,7 @@ interface Props {
 
 const RoomTypingBar: React.FC<Props> = ({ room }) => {
   const { state } = React.useContext(store)
-  const keydowns = state.roomKeydowns[room.handle] || []
+  const keydowns = state.roomKeydowns[room.id] || []
 
   return (
     <div className={classnames(styles.typing, { [styles["typing-visible"]]: keydowns.length > 0 })}>
@@ -38,8 +38,8 @@ const RoomTypingBar: React.FC<Props> = ({ room }) => {
 
 const RoomEditor: React.FC<Props> = ({ room }) => {
   const { dispatch } = React.useContext(store)
-  const onSubmit = (body) => dispatch(sendRoomMessage(room.handle, body))
-  const onKeyDown = () => dispatch(sendRoomKeydown(room.handle))
+  const onSubmit = (body) => dispatch(sendRoomMessage(room, body))
+  const onKeyDown = () => dispatch(sendRoomKeydown(room))
 
   return (
     <div className={styles.editor}>

@@ -1,5 +1,7 @@
 import * as React from "react"
+
 import { Types } from "./actions"
+import { isPathForRoom } from "./helpers/rooms"
 
 interface ContextType {
   state: any
@@ -109,7 +111,7 @@ const reducer = (state, action) => {
         ...state,
         userStates: {
           ...state.userStates,
-          [action.handle]: action.state,
+          [action.user.id]: action.state,
         },
       }
     }
@@ -118,7 +120,7 @@ const reducer = (state, action) => {
         ...state,
         roomSubscriptions: {
           ...state.roomSubscriptions,
-          [action.handle]: action.subscription,
+          [action.room.id]: action.subscription,
         },
       }
     }
@@ -127,7 +129,7 @@ const reducer = (state, action) => {
         ...state,
         userSubscriptions: {
           ...state.userSubscriptions,
-          [action.handle]: action.subscription,
+          [action.user.id]: action.subscription,
         },
       }
     }
@@ -136,7 +138,7 @@ const reducer = (state, action) => {
         ...state,
         roomMessages: {
           ...state.roomMessages,
-          [action.handle]: action.messages.reverse(),
+          [action.room.id]: action.messages.reverse(),
         },
       }
     }
@@ -145,7 +147,7 @@ const reducer = (state, action) => {
         ...state,
         roomMessages: {
           ...state.roomMessages,
-          [action.handle]: [...(state.roomMessages[action.handle] || []), action.message],
+          [action.room.id]: [...(state.roomMessages[action.room.id] || []), action.message],
         },
       }
     }
@@ -154,8 +156,8 @@ const reducer = (state, action) => {
         ...state,
         roomKeydowns: {
           ...state.roomKeydowns,
-          [action.handle]: pushOrReplace(
-            state.roomKeydowns[action.handle],
+          [action.room.id]: pushOrReplace(
+            state.roomKeydowns[action.room.id] || [],
             action.keydown,
             (oldKeydown, newKeydown) => oldKeydown.id === newKeydown.id
           ),
@@ -167,7 +169,7 @@ const reducer = (state, action) => {
         ...state,
         roomKeydowns: {
           ...state.roomKeydowns,
-          [action.handle]: (state.roomKeydowns[action.handle] || []).filter(
+          [action.room.id]: (state.roomKeydowns[action.room.id] || []).filter(
             (keydown) => keydown.userId !== action.keydown.userId
           ),
         },
@@ -185,11 +187,11 @@ const reducer = (state, action) => {
         searchedRooms: action.rooms,
       }
     }
-    case Types.RoomOpening: {
+    case Types.RoomOpeningByPath: {
       return {
         ...state,
         rooms: state.rooms.map((room) =>
-          room.handle === action.handle ? { ...room, open: true } : room
+          isPathForRoom(action.path, room) ? { ...room, open: true } : room
         ),
       }
     }
@@ -197,7 +199,7 @@ const reducer = (state, action) => {
       return {
         ...state,
         rooms: state.rooms.map((room) =>
-          room.handle === action.handle ? { ...room, starred: action.starred } : room
+          room.id === action.room.id ? { ...room, starred: action.starred } : room
         ),
       }
     }
