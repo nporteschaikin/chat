@@ -24,6 +24,7 @@ module Api
     config.load_defaults 6.0
     config.active_record.schema_format = :sql
     config.api_only = true
+    config.active_job.queue_adapter = :sidekiq
     config.middleware.insert_before 0, Rack::Cors do
       allow do
         origins "*"

@@ -29,6 +29,17 @@ services:
       - .env
     mem_limit: 4g
 
+  sidekiq:
+    build: ./api
+    command: bundle exec sidekiq -q default,3 -q high,5 -q low,1
+    volumes:
+      - ./api:/app
+    depends_on:
+      - postgres
+      - redis
+    env_file:
+      - .env
+
   postgres:
     image: postgres:9.6.6-alpine
     ports:

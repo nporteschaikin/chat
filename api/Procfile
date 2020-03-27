@@ -1,1 +1,2 @@
 web: rails server --port $PORT
+sidekiq: bundle exec sidekiq -q default,3 -q high,5 -q low,1
