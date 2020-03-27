@@ -8,8 +8,9 @@ class Registration
     attr_accessor :display_name
     attr_accessor :email
     attr_accessor :password
+    attr_accessor :location_id
 
-    validates :handle, :email, :display_name, :password, presence: true
+    validates :handle, :email, :display_name, :password, :location, presence: true
     validates :email, format: { with: EMAIL_REGEXP }, unless: -> { email.nil? }
 
     validate do
@@ -28,9 +29,16 @@ class Registration
             display_name: display_name,
             email: email,
             password: password,
+            location: location,
           ),
         ),
       )
+    end
+
+    private
+
+    def location
+      @location ||= Location.find_by(id: location_id)
     end
   end
 

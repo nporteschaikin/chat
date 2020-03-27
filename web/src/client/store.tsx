@@ -11,7 +11,7 @@ const initialState = {
   isAuthenticated: false,
   authenticatedUser: null,
   authenticatedToken: null,
-  currentRoomHandle: null,
+  locations: null,
   popularRooms: [],
   rooms: [],
   roomSubscriptions: {},
@@ -188,7 +188,6 @@ const reducer = (state, action) => {
     case Types.RoomOpening: {
       return {
         ...state,
-        currentRoomHandle: action.handle,
         rooms: state.rooms.map((room) =>
           room.handle === action.handle ? { ...room, open: true } : room
         ),
@@ -221,6 +220,12 @@ const reducer = (state, action) => {
           action.open.room,
           (oldRoom, newRoom) => newRoom.id === oldRoom.id
         ),
+      }
+    }
+    case Types.LocationsFetched: {
+      return {
+        ...state,
+        locations: action.locations,
       }
     }
     default: {

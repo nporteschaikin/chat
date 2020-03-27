@@ -12,6 +12,7 @@ class RegistrationsController < ApplicationController
       :display_name,
       :email,
       :password,
+      :location_id,
     )
   end
 end

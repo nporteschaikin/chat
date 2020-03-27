@@ -1,3 +1,3 @@
 class AvatarSerializer < ApplicationSerializer
-  fields *%i[url]
+  fields *%i(url)
 end

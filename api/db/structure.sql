@@ -26,6 +26,38 @@ CREATE TABLE public.ar_internal_metadata (
 
 
 --
+-- Name: locations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.locations (
+    id bigint NOT NULL,
+    handle character varying NOT NULL,
+    human_name character varying NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: locations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.locations_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: locations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.locations_id_seq OWNED BY public.locations.id;
+
+
+--
 -- Name: messages; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -132,7 +164,8 @@ CREATE TABLE public.rooms (
     description character varying NOT NULL,
     created_by_id bigint,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    location_id bigint
 );
 
 
@@ -179,7 +212,8 @@ CREATE TABLE public.users (
     last_offline_at timestamp without time zone,
     last_away_at timestamp without time zone,
     created_at timestamp(6) without time zone NOT NULL,
-    updated_at timestamp(6) without time zone NOT NULL
+    updated_at timestamp(6) without time zone NOT NULL,
+    location_id bigint NOT NULL
 );
 
 
@@ -200,6 +234,13 @@ CREATE SEQUENCE public.users_id_seq
 --
 
 ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
+
+
+--
+-- Name: locations id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.locations ALTER COLUMN id SET DEFAULT nextval('public.locations_id_seq'::regclass);
 
 
 --
@@ -243,6 +284,14 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 ALTER TABLE ONLY public.ar_internal_metadata
     ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
+
+
+--
+-- Name: locations locations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.locations
+    ADD CONSTRAINT locations_pkey PRIMARY KEY (id);
 
 
 --
@@ -291,6 +340,13 @@ ALTER TABLE ONLY public.schema_migrations
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: index_locations_on_handle; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_locations_on_handle ON public.locations USING btree (handle);
 
 
 --
@@ -357,10 +413,17 @@ CREATE INDEX index_rooms_on_created_by_id ON public.rooms USING btree (created_b
 
 
 --
--- Name: index_rooms_on_handle; Type: INDEX; Schema: public; Owner: -
+-- Name: index_rooms_on_location_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_rooms_on_handle ON public.rooms USING btree (handle);
+CREATE INDEX index_rooms_on_location_id ON public.rooms USING btree (location_id);
+
+
+--
+-- Name: index_rooms_on_location_id_and_handle; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_rooms_on_location_id_and_handle ON public.rooms USING btree (location_id, handle);
 
 
 --
@@ -378,6 +441,13 @@ CREATE UNIQUE INDEX index_users_on_handle ON public.users USING btree (handle);
 
 
 --
+-- Name: index_users_on_location_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_users_on_location_id ON public.users USING btree (location_id);
+
+
+--
 -- Name: rooms fk_rails_260909ec58; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -391,6 +461,14 @@ ALTER TABLE ONLY public.rooms
 
 ALTER TABLE ONLY public.room_stars
     ADD CONSTRAINT fk_rails_394a40f4dc FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: users fk_rails_5d96f79c2b; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT fk_rails_5d96f79c2b FOREIGN KEY (location_id) REFERENCES public.locations(id) ON DELETE CASCADE;
 
 
 --
@@ -434,12 +512,21 @@ ALTER TABLE ONLY public.open_rooms
 
 
 --
+-- Name: rooms fk_rails_ee81f621d0; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.rooms
+    ADD CONSTRAINT fk_rails_ee81f621d0 FOREIGN KEY (location_id) REFERENCES public.locations(id) ON DELETE CASCADE;
+
+
+--
 -- PostgreSQL database dump complete
 --
 
 SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
-('20200315223824');
+('20200315223824'),
+('20200327023434');
 
 

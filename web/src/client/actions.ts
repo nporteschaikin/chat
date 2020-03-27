@@ -10,6 +10,7 @@ export enum Types {
   Authenticated,
   AuthenticatedTokenCookieSet,
   AuthenticationFailed,
+  LocationsFetched,
   LoggedIn,
   LoggedOut,
   LoginInvalid,
@@ -312,10 +313,18 @@ export const closeRoom = (handle) => (dispatch, getState) => {
   })
 
   const { authenticatedToken } = getState()
-
   const req = new ApiRequest<Room[]>(ApiRequestMethod.DELETE, `/rooms/${handle}/open`, {
     authenticatedToken,
   })
 
   req.execute().then((open) => dispatch({ type: Types.RoomClosed, open }))
+}
+
+export const fetchLocations = () => (dispatch, getState) => {
+  const { authenticatedToken } = getState()
+  const req = new ApiRequest<Location[]>(ApiRequestMethod.GET, `/locations`, {
+    authenticatedToken,
+  })
+
+  req.execute().then((locations) => dispatch({ type: Types.LocationsFetched, locations }))
 }

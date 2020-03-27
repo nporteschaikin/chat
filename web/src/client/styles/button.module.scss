@@ -12,11 +12,17 @@
   cursor: pointer;
   outline: none;
 
-  &:hover {
-    background: material-color("deep-purple", "900");
+  &:not(:disabled) {
+    &:hover {
+      background: material-color("deep-purple", "900");
+    }
   }
 
   &:active {
     transform: scale(0.95);
+  }
+
+  &:disabled {
+    opacity: 0.5;
   }
 }

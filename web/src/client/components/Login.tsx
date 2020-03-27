@@ -13,16 +13,15 @@ const Login = () => {
   const [email, setEmail] = React.useState("")
   const [password, setPassword] = React.useState("")
 
-  const onSubmit = () => {
-    const trimmedEmail = email.trim()
+  const trimmedEmail = email.trim()
+  const isComplete = trimmedEmail.length > 0 && password.length > 0
 
-    if (trimmedEmail.length > 0 && password.length > 0) {
-      dispatch(logIn(trimmedEmail, password))
-    }
-  }
+  const onSubmit = () => dispatch(logIn(trimmedEmail, password))
 
   return (
     <AuthForm
+      isLoading={false}
+      isComplete={isComplete}
       submitText="Sign in"
       onSubmit={onSubmit}
       renderHeader={() => <>👋</>}

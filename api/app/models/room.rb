@@ -5,11 +5,21 @@ class Room < ApplicationRecord
   RANDOM_DESCRIPTION  = "For random stuff.".freeze
 
   belongs_to :created_by, class_name: "User", optional: true
+  belongs_to :location, optional: true
   has_many :messages
   has_many :stars, class_name: "RoomStar", source: :room
   has_many :open_rooms
 
   pg_search_scope :search, against: %i(handle description)
+
+  scope :visible_to, ->(user) {
+    where(location: nil).or(where(location: user.location))
+  }
+
+  scope :find_by_handle_and_location_handle!, -> (room_handle, location_handle) {
+    left_outer_joins(:location).
+      find_by!(handle: room_handle, locations: { handle: location_handle })
+  }
 
   scope :for_manifest, ->(manifest) {
     distinct.

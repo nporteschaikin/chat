@@ -1,3 +1,8 @@
+export interface Location {
+  id: number
+  humanName: string
+}
+
 export enum UserState {
   New = "new",
   Online = "online",
@@ -11,6 +16,7 @@ export interface User {
   handle: string
   formattedHandle: string
   state: UserState
+  location: Location
   avatar: {
     url: string
   }
@@ -46,6 +52,7 @@ export interface Room {
   description: string | null
   starred: boolean
   open: boolean
+  location: Location | null
 }
 
 export interface Manifest {

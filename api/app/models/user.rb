@@ -6,6 +6,8 @@ class User < ApplicationRecord
   has_many :starred_rooms, through: :room_stars, source: :room
   has_many :authored_messages, class_name: "Message", source: :author
 
+  belongs_to :location
+
   NEW     = "new".freeze
   ONLINE  = "online".freeze
   OFFLINE = "offline".freeze
@@ -13,7 +15,10 @@ class User < ApplicationRecord
 
   attribute :state, :string, default: NEW
 
-  after_create { open_room!(Room.find_general!) }
+  after_create do
+    room = Room.find_general!
+    room.open!(self)
+  end
 
   after_save do
     if saved_change_to_state?
@@ -47,5 +52,9 @@ class User < ApplicationRecord
 
   def away?
     state == AWAY
+  end
+
+  def visible_rooms
+    Room.visible_to(self)
   end
 end

@@ -1,0 +1,21 @@
+@import "sass-material-colors";
+
+@mixin field {
+  display: block;
+  border: 1px solid material-color("grey", "500");
+  font-size: 1.2rem;
+  padding: 0.75rem;
+  border-radius: 3px;
+  outline: none;
+  width: 100%;
+  background: #fff;
+
+  &:focus {
+    box-shadow: 0 0 12px rgba(material-color("deep-purple", "300"), 0.25);
+    border: 1px solid material-color("deep-purple", "800");
+  }
+
+  &:hover {
+    border: 1px solid material-color("deep-purple", "500");
+  }
+}

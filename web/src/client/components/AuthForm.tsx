@@ -3,6 +3,7 @@ import * as React from "react"
 import Alert, { AlertStyle } from "./Alert"
 import AuthRedirect from "./AuthRedirect"
 import Button from "./Button"
+import { LoadingScreen } from "./Loader"
 import { store } from "./../store"
 
 // @ts-ignore
@@ -14,6 +15,8 @@ interface Props {
   renderFooter: () => JSX.Element
   submitText: string
   onSubmit: () => void
+  isLoading: boolean
+  isComplete: boolean
 }
 
 const AuthForm: React.FC<Props> = (props) => {
@@ -21,6 +24,10 @@ const AuthForm: React.FC<Props> = (props) => {
 
   if (state.isAuthenticated) {
     return <AuthRedirect />
+  }
+
+  if (props.isLoading) {
+    return <LoadingScreen />
   }
 
   return (
@@ -31,10 +38,14 @@ const AuthForm: React.FC<Props> = (props) => {
         <form
           onSubmit={(event) => {
             event.preventDefault()
-            props.onSubmit()
+            if (props.isComplete) {
+              props.onSubmit()
+            }
           }}>
           {props.children}
-          <Button type="submit">{props.submitText}</Button>
+          <Button type="submit" disabled={!props.isComplete}>
+            {props.submitText}
+          </Button>
         </form>
         <footer>{props.renderFooter()}</footer>
       </div>

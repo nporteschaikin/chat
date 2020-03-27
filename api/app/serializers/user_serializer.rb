@@ -1,12 +1,13 @@
 class UserSerializer < ApplicationSerializer
   identifier :id
 
-  fields *%i[
+  fields *%i(
     formatted_handle
     display_name
     handle
     state
-  ]
+  )
 
   association :avatar, blueprint: AvatarSerializer
+  association :location, blueprint: LocationSerializer
 end
