@@ -52,27 +52,32 @@ const RoomSearchModal: React.FC<Props> = ({ isVisible, onClick, onNavigate }) =>
   const trimmedQuery = query.trim()
   const isPopularVisible = trimmedQuery.length === 0
   const rooms = isPopularVisible ? state.popularRooms : state.searchedRooms
+  const roomsToDisplay = rooms.slice(0, 5)
   const onChange = (event) => setQuery(event.target.value)
   const onSelect = () => {
     onNavigate()
-    history.push(`/r/${rooms[selectedRoomIndex].handle}`)
+    history.push(buildRoomLocationPathFromRoom(roomsToDisplay[selectedRoomIndex]))
   }
 
   React.useEffect(() => {
     isVisible && dispatch(fetchPopularRooms())
   }, [isVisible])
   React.useEffect(() => dispatch(searchRooms(trimmedQuery)), [trimmedQuery])
-  React.useEffect(() => setSelectedRoomIndex(0), [rooms.length])
+  React.useEffect(() => setSelectedRoomIndex(0), [roomsToDisplay.length])
 
   return (
     <Modal isVisible={isVisible} onClick={onClick}>
       <Dialog>
         <DialogHeader>
           <KeyboardTextField
-            onUp={() => setSelectedRoomIndex(selectedRoomIndex === 0 ? 0 : selectedRoomIndex - 1)}
+            onUp={() =>
+              setSelectedRoomIndex(
+                selectedRoomIndex === 0 ? roomsToDisplay.length - 1 : selectedRoomIndex - 1
+              )
+            }
             onDown={() =>
               setSelectedRoomIndex(
-                selectedRoomIndex + 1 >= rooms.length ? 0 : selectedRoomIndex + 1
+                selectedRoomIndex + 1 >= roomsToDisplay.length ? 0 : selectedRoomIndex + 1
               )
             }
             onSelect={onSelect}
@@ -83,11 +88,11 @@ const RoomSearchModal: React.FC<Props> = ({ isVisible, onClick, onNavigate }) =>
             isActive={isVisible}
           />
         </DialogHeader>
-        {rooms.length > 0 ? (
+        {roomsToDisplay.length > 0 ? (
           <>
             <DialogBody>
               {isPopularVisible && <h5 className={styles["popular-header"]}>Popular right now</h5>}
-              {rooms.slice(0, 5).map((room, index) => (
+              {roomsToDisplay.map((room, index) => (
                 <RoomLink
                   key={room.id}
                   isSelected={selectedRoomIndex === index}
