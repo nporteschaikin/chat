@@ -4,6 +4,7 @@ import { Link, useHistory } from "react-router-dom"
 
 import { store } from "./../store"
 import { searchRooms, fetchPopularRooms } from "./../actions"
+import { buildRoomLocationPathFromRoom } from "./../helpers/rooms"
 import { Room } from "./../types"
 import RoomLabel from "./RoomLabel"
 import Modal, { ModalManager } from "./Modal"
@@ -28,7 +29,7 @@ const RoomLink: React.FC<{ room: Room; onClick: () => void; isSelected: boolean 
   isSelected,
 }) => (
   <Link
-    to={`/r/${room.handle}`}
+    to={buildRoomLocationPathFromRoom(room)}
     onClick={onClick}
     className={classnames(styles.link, { [styles.selected]: isSelected })}>
     <span>
