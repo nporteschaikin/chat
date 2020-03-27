@@ -22,7 +22,6 @@ Rails.application.routes.draw do
   end
 
   room_routes
-
   resources :locations, param: :handle, only: %i(index) do
     room_routes
   end

@@ -328,9 +328,13 @@ export const closeRoom = (room) => (dispatch, getState) => {
   })
 
   const { authenticatedToken } = getState()
-  const req = new ApiRequest<Room[]>(ApiRequestMethod.DELETE, buildRoomApiUrlFromRoom(room), {
-    authenticatedToken,
-  })
+  const req = new ApiRequest<Room[]>(
+    ApiRequestMethod.DELETE,
+    buildRoomApiUrlFromRoom(room, "open"),
+    {
+      authenticatedToken,
+    }
+  )
 
   req.execute().then((open) => dispatch({ type: Types.RoomClosed, open }))
 }

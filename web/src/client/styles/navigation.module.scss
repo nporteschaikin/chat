@@ -27,36 +27,6 @@ $shared-border-radius: 5px;
   font-size: 1rem;
   color: material-color("grey", "300");
 
-  a {
-    color: material-color("grey", "300");
-    display: block;
-    margin: 0 -0.5rem;
-    padding: 0.5rem;
-    border-radius: $shared-border-radius;
-
-    &:hover {
-      background: material-color("deep-purple", "800");
-      color: material-color("grey", "50");
-    }
-
-    &:active {
-      background: material-color("deep-purple", "900");
-      color: material-color("grey", "50");
-    }
-    &.current {
-      background: material-color("teal", "500");
-      color: material-color("grey", "50");
-
-      &:hover {
-        background: material-color("teal", "600");
-      }
-
-      &:active {
-        background: material-color("teal", "700");
-      }
-    }
-  }
-
   h4 {
     color: material-color("deep-purple", "50");
     margin-bottom: 0.5rem;
@@ -65,11 +35,42 @@ $shared-border-radius: 5px;
 
 .room-link {
   position: relative;
+  margin: 0 -0.5rem;
+  border-radius: $shared-border-radius;
+
+  a {
+    color: material-color("grey", "300");
+    display: block;
+    padding: 0.5rem;
+  }
+
+  &:hover {
+    background: material-color("deep-purple", "800");
+    color: material-color("grey", "50");
+  }
+
+  &:active {
+    background: material-color("deep-purple", "900");
+    color: material-color("grey", "50");
+  }
+
+  &.current {
+    background: material-color("teal", "500");
+    color: material-color("grey", "50");
+
+    &:hover {
+      background: material-color("teal", "600");
+    }
+
+    &:active {
+      background: material-color("teal", "700");
+    }
+  }
 
   .close {
     display: none;
     position: absolute;
-    right: 0.25rem;
+    right: 0.5rem;
     top: 50%;
     margin-top: -0.55rem;
     font-size: 1.2rem;

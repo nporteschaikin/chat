@@ -12,7 +12,7 @@ interface Props {
 
 const RoomLabel: React.SFC<Props> = ({ room }) => (
   <span className={styles.root}>
-    {room.location !== null ? <FaMapPin /> : "#"} {room.handle}
+    {room.location !== null && <FaMapPin />} {room.handle}
   </span>
 )
 

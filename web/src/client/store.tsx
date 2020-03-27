@@ -195,6 +195,14 @@ const reducer = (state, action) => {
         ),
       }
     }
+    case Types.RoomClosing: {
+      return {
+        ...state,
+        rooms: state.rooms.map((room) =>
+          room.id === action.room.id ? { ...room, open: false } : room
+        ),
+      }
+    }
     case Types.RoomStarSetting: {
       return {
         ...state,

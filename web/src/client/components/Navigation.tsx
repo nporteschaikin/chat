@@ -60,17 +60,14 @@ const NavigationRoomLink: React.FC<{ room: Room; showCloseButton: boolean }> = (
   const path = buildRoomLocationPathFromRoom(props.room)
   const isCurrent = path === location.pathname
 
-  const onClickClose = (event) => {
-    event.stopPropagation()
-    dispatch(closeRoom(props.room))
-  }
+  const onClickClose = () => dispatch(closeRoom(props.room))
 
   return (
-    <div className={styles["room-link"]}>
+    <div className={classnames(styles["room-link"], { [styles.current]: isCurrent })}>
       {props.showCloseButton && !isCurrent && (
         <IoMdCloseCircleOutline onClick={onClickClose} className={styles.close} />
       )}
-      <Link className={classnames({ [styles.current]: isCurrent })} to={path}>
+      <Link to={path} onClick={(event) => event.stopPropagation()}>
         <RoomLabel room={props.room} />
       </Link>
     </div>
@@ -96,7 +93,7 @@ const NavigationRoomSection: React.FC<{
 
 const Navigation: React.FC = () => {
   const { state } = React.useContext(store)
-  const { rooms } = state
+  const { rooms, authenticatedUser } = state
 
   return (
     <div className={styles.root}>
@@ -110,13 +107,13 @@ const Navigation: React.FC = () => {
               showCloseButton={false}
             />
             <NavigationRoomSection
-              title="Locals"
-              rooms={rooms.filter((room) => !room.starred && room.location !== null)}
+              title={authenticatedUser.location.humanName}
+              rooms={rooms.filter((room) => !room.starred && room.open && room.location !== null)}
               showCloseButton={true}
             />
             <NavigationRoomSection
               title="Global"
-              rooms={rooms.filter((room) => !room.starred && room.location === null)}
+              rooms={rooms.filter((room) => !room.starred && room.open && room.location === null)}
               showCloseButton={true}
             />
           </>
