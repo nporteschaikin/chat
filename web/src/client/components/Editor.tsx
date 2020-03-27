@@ -23,6 +23,7 @@ const Editor: React.FC<Props> = (props) => {
 
       if (text.length > 0) {
         props.onSubmit(text)
+        setText("")
         current!.innerText = ""
       }
     } else {
