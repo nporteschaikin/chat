@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { store } from "./../store"
+import { formatDate } from "./../helpers/date"
 import { Message as MessageType } from "./../types"
 import UserAvatar from "./UserAvatar"
 
@@ -14,12 +15,7 @@ const MessageDetails: React.FC<{ message: MessageType }> = ({ message }) => (
         <strong>{message.author.displayName}</strong>
         <span className={styles.signature}>
           {" "}
-          {message.author.formattedHandle} &bull;{" "}
-          {new Date(message.createdAt).toLocaleString("en-US", {
-            hour: "numeric",
-            minute: "numeric",
-            hour12: true,
-          })}
+          {message.author.formattedHandle} &bull; {formatDate(message.createdAt)}
         </span>
       </>
     )}
