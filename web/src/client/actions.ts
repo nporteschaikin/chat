@@ -118,7 +118,7 @@ export const receiveAuthentication = (manifest) => (dispatch, getState) => {
     ),
   })
 
-  dispatch(subscribeToUserState(manifest.user.handle))
+  dispatch(subscribeToUserState(manifest.user))
   dispatch(receiveRooms(manifest.rooms))
 }
 
