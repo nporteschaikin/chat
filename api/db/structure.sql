@@ -480,6 +480,13 @@ CREATE INDEX index_rooms_on_created_by_id ON public.rooms USING btree (created_b
 
 
 --
+-- Name: index_rooms_on_handle; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_rooms_on_handle ON public.rooms USING btree (handle) WHERE (location_id IS NULL);
+
+
+--
 -- Name: index_rooms_on_location_id; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -490,7 +497,7 @@ CREATE INDEX index_rooms_on_location_id ON public.rooms USING btree (location_id
 -- Name: index_rooms_on_location_id_and_handle; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_rooms_on_location_id_and_handle ON public.rooms USING btree (location_id, handle);
+CREATE UNIQUE INDEX index_rooms_on_location_id_and_handle ON public.rooms USING btree (location_id, handle) WHERE (location_id IS NOT NULL);
 
 
 --
@@ -611,6 +618,7 @@ SET search_path TO "$user", public;
 INSERT INTO "schema_migrations" (version) VALUES
 ('20200315223824'),
 ('20200327023434'),
-('20200327221844');
+('20200327221844'),
+('20200328002356');
 
 
