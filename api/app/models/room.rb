@@ -106,10 +106,10 @@ class Room < ApplicationRecord
   end
 
   def read_all(user, read_at = Time.now)
-    MessageRead.read_all_for_room(self, user, read_at)
+    MessageRead.read_all_for_room(user, self, read_at)
   end
 
-  def reads_for?(user)
-    reads.read_by(user).any?
+  def read_by?(user)
+    reads.by(user).read.count == reads.by(user).count
   end
 end

@@ -30,6 +30,7 @@ export enum Types {
   RoomOpeningByPath,
   RoomReceived,
   RoomsReceived,
+  RoomReadAll,
   SearchedRoomsFetched,
   SubscribedToRoom,
   SubscribedToUserState,
@@ -147,6 +148,7 @@ enum RoomEventType {
 
 enum RoomAction {
   Keydown = "keydown",
+  ReadAll = "read_all",
 }
 
 export const receiveRooms = (rooms) => (dispatch, _) => {
@@ -285,6 +287,19 @@ export const fetchRoomMessages = (room) => (dispatch, getState) => {
     .then((messages) => dispatch({ type: Types.RoomMessagesFetched, room, messages }))
 }
 
+export const readAllInRoom = (room: Room) => (_, getState) => {
+  const { roomSubscriptions } = getState()
+  const subscription = roomSubscriptions[room.id]
+
+  if (subscription) {
+    subscription.perform(RoomAction.ReadAll)
+  }
+
+  return {
+    type: Types.RoomReadAll,
+  }
+}
+
 export const openRoomByPath = (path: RoomPath) => (dispatch, getState) => {
   dispatch({
     type: Types.RoomOpeningByPath,
@@ -302,6 +317,7 @@ export const openRoomByPath = (path: RoomPath) => (dispatch, getState) => {
   req.execute().then((open) =>
     dispatch(fetchRoomMessages(open.room))
       .then(() => dispatch(receiveRoom(open.room)))
+      .then(() => dispatch(readAllInRoom(open.room)))
       .then(() => dispatch({ type: Types.RoomOpened, room: open.room }))
   )
 }

@@ -58,6 +58,7 @@ export interface Room {
   description: string | null
   starred: boolean
   open: boolean
+  read: boolean
   location: Location | null
 }
 

@@ -25,10 +25,6 @@ class Message < ApplicationRecord
 
   scope :unread_in_room_for, ->(user, room) {
     left_outer_joins(:reads).
-      where(room_id: room.id, message_reads: { user_id: user.id, read_at: nil }).
-      or(
-        left_outer_joins(:reads).
-          where(room_id: room.id, message_reads: { user_id: nil, read_at: nil })
-      )
+      where(room_id: room.id, message_reads: { user_id: user.id, read_at: nil })
   }
 end

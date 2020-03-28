@@ -7,9 +7,8 @@ class MessageRead < ApplicationRecord
       where(messages: { room_id: room.id }, user_id: user.id)
   }
 
-  scope :read_by, ->(user) {
-    where(user: user).where.not(read_at: nil)
-  }
+  scope :by, ->(user) { where(user: user) }
+  scope :read, -> { where.not(read_at: nil) }
 
   class << self
     def upsert_for(message)

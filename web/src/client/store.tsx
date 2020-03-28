@@ -76,7 +76,7 @@ const reducer = (state, action) => {
         authenticatedUser: null,
         authenticatedToken: null,
         consumer: null,
-        rooms: null,
+        rooms: [],
         roomMessages: {},
         roomKeydowns: {},
         unreadRooms: {},
@@ -146,10 +146,9 @@ const reducer = (state, action) => {
     case Types.RoomMessageReceived: {
       return {
         ...state,
-        unreadRooms: {
-          ...state.unreadRooms,
-          [action.room.id]: state.openRoomId !== action.room.id,
-        },
+        rooms: state.rooms.map((room) =>
+          room.id === action.room.id ? { ...room, read: state.openRoomId === room.id } : room
+        ),
         roomMessages: {
           ...state.roomMessages,
           [action.room.id]: state.roomMessages[action.room.id]
@@ -238,10 +237,9 @@ const reducer = (state, action) => {
       return {
         ...state,
         openRoomId: action.room.id,
-        unreadRooms: {
-          ...state.unreadRooms,
-          [action.room.id]: false,
-        },
+        rooms: state.rooms.map((room) =>
+          room.id === action.room.id ? { ...room, open: true, read: true } : room
+        ),
       }
     }
     case Types.LocationsFetched: {
