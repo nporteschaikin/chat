@@ -1,4 +1,6 @@
 class MessageRead < ApplicationRecord
+  UPSERT_KEYS = %i(message_id user_id)
+
   belongs_to :message
   belongs_to :user
 
@@ -13,13 +15,13 @@ class MessageRead < ApplicationRecord
   class << self
     def upsert_for(message)
       if (attributes = build_upsert_attributes_for(message)).present?
-        upsert_all(attributes, unique_by: %i(message_id user_id))
+        upsert_all(attributes, unique_by: UPSERT_KEYS)
       end
     end
 
     def read_all_for_room(user, room, read_at = Time.now)
       if (attributes = build_read_all_attributes_for(user, room, read_at)).present?
-        upsert_all(attributes, unique_by: %i(message_id user_id))
+        upsert_all(attributes, unique_by: UPSERT_KEYS)
       end
     end
 

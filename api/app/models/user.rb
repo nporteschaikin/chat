@@ -35,11 +35,13 @@ class User < ApplicationRecord
     distinct.
       left_outer_joins(:room_stars).
       left_outer_joins(:open_rooms).
+      where.not(id: message.author_id).
       where(room_stars: { room_id: message.room_id }).
       or(
         distinct.
           left_outer_joins(:room_stars).
           left_outer_joins(:open_rooms).
+          where.not(id: message.author_id).
           where(open_rooms: { room_id: message.room_id })
       )
   }
