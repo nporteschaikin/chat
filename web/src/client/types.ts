@@ -18,6 +18,7 @@ export interface User {
   formattedHandle: string
   state: UserState
   location: Location
+  private: boolean
   avatar: {
     url: string
   }
@@ -53,13 +54,15 @@ export interface RoomPath {
 
 export interface Room {
   id: number
-  handle: string
+  handle: string | null
   formattedHandle: string
   description: string | null
   starred: boolean
   open: boolean
   read: boolean
   location: Location | null
+  privateUuid: string | null
+  members: User[]
 }
 
 export interface Manifest {

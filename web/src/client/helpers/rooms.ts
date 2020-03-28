@@ -10,7 +10,7 @@ export const buildRoomApiUrlFromPath = (path: RoomPath, ...otherParts: string[])
 
 export const buildRoomApiUrlFromRoom = (room: Room, ...otherParts): string =>
   buildRoomApiUrlFromPath(
-    { locationHandle: room.location?.handle, handle: room.handle },
+    { locationHandle: room.location?.handle, handle: room.handle! },
     ...otherParts
   )
 
@@ -20,8 +20,8 @@ export const isPathForRoom = (path: RoomPath, room: Room): boolean =>
 export const buildRoomLocationPathFromRoom = (room: Room): string => {
   const parts: string[] = [
     "r",
-    ...(room.location?.handle ? [room.location.handle] : []),
-    room.handle,
+    ...(room.location?.handle ? [room.location.handle!] : []),
+    room.handle!,
   ]
 
   return `/${parts.join("/")}`

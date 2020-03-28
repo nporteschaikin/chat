@@ -4,6 +4,7 @@ class RoomSerializer < ApplicationSerializer
     formatted_handle
     handle
     id
+    private
   )
 
   field :starred do |room, options|
@@ -22,4 +23,5 @@ class RoomSerializer < ApplicationSerializer
   end
 
   association :location, blueprint: LocationSerializer
+  association :members, blueprint: UserSerializer
 end

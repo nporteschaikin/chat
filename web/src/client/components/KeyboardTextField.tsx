@@ -1,4 +1,5 @@
 import * as React from "react"
+import classnames from "classnames"
 
 import TextField, { Props as TextFieldProps } from "./TextField"
 import KeyboardIcon, { KeyboardIconType } from "./KeyboardIcon"
@@ -13,8 +14,8 @@ interface Props extends TextFieldProps {
   isActive: boolean
 }
 
-export const KeyboardTextFieldLegend: React.SFC = () => (
-  <div className={styles.legend}>
+export const KeyboardTextFieldLegend: React.FC<{ className?: string }> = ({ className }) => (
+  <div className={classnames(className, styles.legend)}>
     <div>
       <KeyboardIcon type={KeyboardIconType.Tab} />
       <KeyboardIcon type={KeyboardIconType.UpArrow} />

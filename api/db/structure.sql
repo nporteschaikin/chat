@@ -122,6 +122,38 @@ ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
 
 
 --
+-- Name: room_members; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.room_members (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    room_id bigint NOT NULL,
+    created_at timestamp(6) without time zone NOT NULL,
+    updated_at timestamp(6) without time zone NOT NULL
+);
+
+
+--
+-- Name: room_members_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.room_members_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: room_members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.room_members_id_seq OWNED BY public.room_members.id;
+
+
+--
 -- Name: room_opens; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -196,7 +228,8 @@ CREATE TABLE public.rooms (
     created_by_id bigint,
     created_at timestamp(6) without time zone NOT NULL,
     updated_at timestamp(6) without time zone NOT NULL,
-    location_id bigint
+    location_id bigint,
+    private boolean DEFAULT false NOT NULL
 );
 
 
@@ -289,6 +322,13 @@ ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.mes
 
 
 --
+-- Name: room_members id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.room_members ALTER COLUMN id SET DEFAULT nextval('public.room_members_id_seq'::regclass);
+
+
+--
 -- Name: room_opens id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -346,6 +386,14 @@ ALTER TABLE ONLY public.message_reads
 
 ALTER TABLE ONLY public.messages
     ADD CONSTRAINT messages_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: room_members room_members_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.room_members
+    ADD CONSTRAINT room_members_pkey PRIMARY KEY (id);
 
 
 --
@@ -428,6 +476,20 @@ CREATE INDEX index_messages_on_author_id ON public.messages USING btree (author_
 --
 
 CREATE INDEX index_messages_on_room_id ON public.messages USING btree (room_id);
+
+
+--
+-- Name: index_room_members_on_room_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_room_members_on_room_id ON public.room_members USING btree (room_id);
+
+
+--
+-- Name: index_room_members_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_room_members_on_user_id ON public.room_members USING btree (user_id);
 
 
 --
@@ -562,11 +624,27 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- Name: room_members fk_rails_94f958b71d; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.room_members
+    ADD CONSTRAINT fk_rails_94f958b71d FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
 -- Name: messages fk_rails_995937c106; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.messages
     ADD CONSTRAINT fk_rails_995937c106 FOREIGN KEY (author_id) REFERENCES public.users(id) ON DELETE SET NULL;
+
+
+--
+-- Name: room_members fk_rails_a081ee6881; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.room_members
+    ADD CONSTRAINT fk_rails_a081ee6881 FOREIGN KEY (room_id) REFERENCES public.rooms(id) ON DELETE CASCADE;
 
 
 --
@@ -620,6 +698,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200327023434'),
 ('20200327221844'),
 ('20200328002356'),
-('20200328012514');
+('20200328012514'),
+('20200328030141');
 
 

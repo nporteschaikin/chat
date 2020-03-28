@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom"
 import { AiOutlineSearch } from "react-icons/ai"
 import { IoMdCloseCircleOutline } from "react-icons/io"
 
-import RoomSearchModal, { RoomSearchModalManager } from "./RoomSearchModal"
+import RoomNavigatorModal, { RoomNavigatorModalManager } from "./RoomNavigatorModal"
 import UserAvatar from "./UserAvatar"
 import RoomLabel from "./RoomLabel"
 import { Room } from "./../types"
@@ -35,7 +35,7 @@ const NavigationUser: React.FC = () => {
 }
 
 const NavigationSearchButton: React.FC = () => (
-  <RoomSearchModalManager>
+  <RoomNavigatorModalManager>
     {(isVisible, setVisible) => (
       <div className={styles.search}>
         <button onClick={() => setVisible(!isVisible)}>
@@ -44,14 +44,14 @@ const NavigationSearchButton: React.FC = () => (
           </span>
           <span>Find a room</span>
         </button>
-        <RoomSearchModal
+        <RoomNavigatorModal
           isVisible={isVisible}
           onClick={() => setVisible(false)}
           onNavigate={() => setVisible(false)}
         />
       </div>
     )}
-  </RoomSearchModalManager>
+  </RoomNavigatorModalManager>
 )
 
 const NavigationRoomLink: React.FC<{ room: Room; showCloseButton: boolean }> = (props) => {
@@ -109,12 +109,21 @@ const Navigation: React.FC = () => {
             />
             <NavigationRoomSection
               title={authenticatedUser.location.humanName}
-              rooms={rooms.filter((room) => !room.starred && room.open && room.location !== null)}
+              rooms={rooms.filter(
+                (room) => !room.starred && !room.private && room.open && room.location !== null
+              )}
               showCloseButton={true}
             />
             <NavigationRoomSection
               title="Global"
-              rooms={rooms.filter((room) => !room.starred && room.open && room.location === null)}
+              rooms={rooms.filter(
+                (room) => !room.starred && !room.private && room.open && room.location === null
+              )}
+              showCloseButton={true}
+            />
+            <NavigationRoomSection
+              title="Private"
+              rooms={rooms.filter((room) => !room.starred && room.private)}
               showCloseButton={true}
             />
           </>

@@ -16,7 +16,7 @@ $shared-border-radius: 5px;
 }
 
 .section {
-  margin-bottom: 1em;
+  margin-bottom: 1.5em;
 }
 
 .links {
@@ -30,6 +30,7 @@ $shared-border-radius: 5px;
   h4 {
     color: material-color("deep-purple", "50");
     margin-bottom: 0.5rem;
+    position: relative;
   }
 }
 
@@ -166,4 +167,11 @@ $shared-border-radius: 5px;
       line-height: 0;
     }
   }
+}
+
+.create-modal {
+  right: 0;
+  top: 50%;
+  transform: translateY(-0.4rem);
+  position: absolute;
 }

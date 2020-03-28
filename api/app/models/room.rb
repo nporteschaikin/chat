@@ -6,6 +6,8 @@ class Room < ApplicationRecord
 
   belongs_to :created_by, class_name: "User", optional: true
   belongs_to :location, optional: true
+  has_many :room_members, class_name: "RoomMember"
+  has_many :members, through: :room_members, source: :user
   has_many :messages
   has_many :stars, class_name: "RoomStar", source: :room
   has_many :room_opens
@@ -15,7 +17,17 @@ class Room < ApplicationRecord
   pg_search_scope :search, against: %i(handle description)
 
   scope :visible_to, ->(user) {
-    where(location: nil).or(where(location: user.location))
+    left_outer_joins(:members).
+      where(location: nil, private: false).
+      or(
+        left_outer_joins(:members).
+          where(location: user.location, private: false),
+      ).
+      or(
+        left_outer_joins(:members).
+          where(location: user.location, room_members: { user_id: user.id }).
+          where.not(private: true)
+      )
   }
 
   scope :find_by_handle_and_location_handle!, -> (room_handle, location_handle) {
