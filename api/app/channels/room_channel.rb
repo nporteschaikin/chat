@@ -26,6 +26,11 @@ class RoomChannel < ApplicationCable::Channel
     stream_for(room)
   end
 
+  def read_all
+    room = current_user.visible_rooms.find(params.fetch(:id))
+    room.enqueue_read_all(current_user)
+  end
+
   def keydown
     self.class.broadcast_event_to(
       current_user.visible_rooms.find(params.fetch(:id)),

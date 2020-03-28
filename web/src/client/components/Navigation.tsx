@@ -55,10 +55,11 @@ const NavigationSearchButton: React.FC = () => (
 )
 
 const NavigationRoomLink: React.FC<{ room: Room; showCloseButton: boolean }> = (props) => {
-  const { dispatch } = React.useContext(store)
+  const { state, dispatch } = React.useContext(store)
   const location = useLocation()
   const path = buildRoomLocationPathFromRoom(props.room)
   const isCurrent = path === location.pathname
+  const isUnread = !!state.unreadRooms[props.room.id]
 
   const onClickClose = () => dispatch(closeRoom(props.room))
 
@@ -69,6 +70,7 @@ const NavigationRoomLink: React.FC<{ room: Room; showCloseButton: boolean }> = (
       )}
       <Link to={path} onClick={(event) => event.stopPropagation()}>
         <RoomLabel room={props.room} />
+        {isUnread && <span className={styles.unread} />}
       </Link>
     </div>
   )

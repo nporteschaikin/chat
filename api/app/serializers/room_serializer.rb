@@ -16,5 +16,10 @@ class RoomSerializer < ApplicationSerializer
       room.open_for?(user)
   end
 
+  field :unread do |room, options|
+    (user = options[:user]).present? &&
+      room.reads_for?(user)
+  end
+
   association :location, blueprint: LocationSerializer
 end

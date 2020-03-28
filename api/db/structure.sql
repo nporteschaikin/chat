@@ -58,6 +58,37 @@ ALTER SEQUENCE public.locations_id_seq OWNED BY public.locations.id;
 
 
 --
+-- Name: message_reads; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.message_reads (
+    id bigint NOT NULL,
+    message_id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    read_at timestamp without time zone
+);
+
+
+--
+-- Name: message_reads_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.message_reads_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: message_reads_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.message_reads_id_seq OWNED BY public.message_reads.id;
+
+
+--
 -- Name: messages; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -244,6 +275,13 @@ ALTER TABLE ONLY public.locations ALTER COLUMN id SET DEFAULT nextval('public.lo
 
 
 --
+-- Name: message_reads id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.message_reads ALTER COLUMN id SET DEFAULT nextval('public.message_reads_id_seq'::regclass);
+
+
+--
 -- Name: messages id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -292,6 +330,14 @@ ALTER TABLE ONLY public.ar_internal_metadata
 
 ALTER TABLE ONLY public.locations
     ADD CONSTRAINT locations_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: message_reads message_reads_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.message_reads
+    ADD CONSTRAINT message_reads_pkey PRIMARY KEY (id);
 
 
 --
@@ -347,6 +393,27 @@ ALTER TABLE ONLY public.users
 --
 
 CREATE UNIQUE INDEX index_locations_on_handle ON public.locations USING btree (handle);
+
+
+--
+-- Name: index_message_reads_on_message_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_message_reads_on_message_id ON public.message_reads USING btree (message_id);
+
+
+--
+-- Name: index_message_reads_on_message_id_and_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_message_reads_on_message_id_and_user_id ON public.message_reads USING btree (message_id, user_id);
+
+
+--
+-- Name: index_message_reads_on_user_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX index_message_reads_on_user_id ON public.message_reads USING btree (user_id);
 
 
 --
@@ -464,6 +531,22 @@ ALTER TABLE ONLY public.room_stars
 
 
 --
+-- Name: message_reads fk_rails_5be3e40ab8; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.message_reads
+    ADD CONSTRAINT fk_rails_5be3e40ab8 FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
+
+
+--
+-- Name: message_reads fk_rails_5cdd7f1743; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.message_reads
+    ADD CONSTRAINT fk_rails_5cdd7f1743 FOREIGN KEY (message_id) REFERENCES public.messages(id) ON DELETE CASCADE;
+
+
+--
 -- Name: users fk_rails_5d96f79c2b; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -527,6 +610,7 @@ SET search_path TO "$user", public;
 
 INSERT INTO "schema_migrations" (version) VALUES
 ('20200315223824'),
-('20200327023434');
+('20200327023434'),
+('20200327221844');
 
 

@@ -9,6 +9,7 @@ class Room < ApplicationRecord
   has_many :messages
   has_many :stars, class_name: "RoomStar", source: :room
   has_many :open_rooms
+  has_many :reads, through: :messages
 
   pg_search_scope :search, against: %i(handle description)
 
@@ -98,5 +99,17 @@ class Room < ApplicationRecord
 
   def unstar!(user)
     stars.find_by!(user: user).destroy
+  end
+
+  def enqueue_read_all(user, read_at = Time.now)
+    ReadAllRoomMessagesJob.perform_later(user.id, id, read_at)
+  end
+
+  def read_all(user, read_at = Time.now)
+    MessageRead.read_all_for_room(self, user, read_at)
+  end
+
+  def reads_for?(user)
+    reads.read_by(user).any?
   end
 end

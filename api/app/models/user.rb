@@ -3,6 +3,7 @@ class User < ApplicationRecord
 
   has_many :user_tokens
   has_many :room_stars
+  has_many :open_rooms
   has_many :starred_rooms, through: :room_stars, source: :room
   has_many :authored_messages, class_name: "Message", source: :author
 
@@ -29,6 +30,19 @@ class User < ApplicationRecord
       )
     end
   end
+
+  scope :to_upsert_message_reads_for, ->(message) {
+    distinct.
+      left_outer_joins(:room_stars).
+      left_outer_joins(:open_rooms).
+      where(room_stars: { room_id: message.room_id }).
+      or(
+        distinct.
+          left_outer_joins(:room_stars).
+          left_outer_joins(:open_rooms).
+          where(open_rooms: { room_id: message.room_id })
+      )
+  }
 
   def formatted_handle
     "@%s" % handle

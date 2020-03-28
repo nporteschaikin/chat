@@ -77,6 +77,15 @@ $shared-border-radius: 5px;
     cursor: pointer;
   }
 
+  .unread {
+    background: material-color("yellow", "600");
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-left: 0.5rem;
+  }
+
   &:hover {
     .close {
       display: block;

@@ -28,6 +28,8 @@ export enum Types {
   RoomMessagesFetched,
   RoomOpened,
   RoomOpeningByPath,
+  RoomReceived,
+  RoomsReceived,
   SearchedRoomsFetched,
   SubscribedToRoom,
   SubscribedToUserState,
@@ -92,30 +94,32 @@ export const logOut = () => (dispatch) => {
 }
 
 export const authenticate = () => (dispatch, getState) => {
-  const { authenticatedToken } = getState()
+  const req = new ApiRequest<Manifest>(ApiRequestMethod.GET, "/manifest", {
+    authenticatedToken: getState().authenticatedToken,
+  })
 
-  const req = new ApiRequest<Manifest>(ApiRequestMethod.GET, "/manifest", { authenticatedToken })
   req
     .execute()
-    .then((manifest) => {
-      const consumer = actioncable.createConsumer(
-        [process.env.API_URL, `cable?token=${authenticatedToken}`].join("/")
-      )
-
-      dispatch({
-        type: Types.Authenticated,
-        manifest,
-        consumer,
-      })
-
-      return manifest
-    })
-    .then((manifest) => dispatch(subscribeToUserState(manifest.user.handle)))
-    .catch(() =>
+    .then((manifest) => dispatch(receiveAuthentication(manifest)))
+    .catch((ex) =>
       dispatch({
         type: Types.AuthenticationFailed,
+        ex: ex,
       })
     )
+}
+
+export const receiveAuthentication = (manifest) => (dispatch, getState) => {
+  dispatch({
+    type: Types.Authenticated,
+    manifest,
+    consumer: actioncable.createConsumer(
+      [process.env.API_URL, `cable?token=${getState().authenticatedToken}`].join("/")
+    ),
+  })
+
+  dispatch(subscribeToUserState(manifest.user.handle))
+  dispatch(receiveRooms(manifest.rooms))
 }
 
 export const register = (registration: RegistrationForm) => (dispatch) => {
@@ -143,6 +147,22 @@ enum RoomEventType {
 
 enum RoomAction {
   Keydown = "keydown",
+}
+
+export const receiveRooms = (rooms) => (dispatch, _) => {
+  rooms.forEach((room) => dispatch(subscribeToRoom(room)))
+  dispatch({
+    type: Types.RoomsReceived,
+    rooms,
+  })
+}
+
+export const receiveRoom = (room) => (dispatch, _) => {
+  dispatch(subscribeToRoom(room))
+  dispatch({
+    type: Types.RoomReceived,
+    room,
+  })
 }
 
 export const receiveRoomKeydown = (room, keydown) => (dispatch, getState) => {
@@ -281,8 +301,8 @@ export const openRoomByPath = (path: RoomPath) => (dispatch, getState) => {
 
   req.execute().then((open) =>
     dispatch(fetchRoomMessages(open.room))
-      .then(() => dispatch(subscribeToRoom(open.room)))
-      .then(() => dispatch({ type: Types.RoomOpened, open }))
+      .then(() => dispatch(receiveRoom(open.room)))
+      .then(() => dispatch({ type: Types.RoomOpened, room: open.room }))
   )
 }
 
@@ -310,7 +330,7 @@ export const searchRooms = (query) => (dispatch, getState) => {
 export const setRoomStar = (room, starred) => (dispatch, getState) => {
   dispatch({ type: Types.RoomStarSetting, room, starred })
 
-  const req = new ApiRequest<Room[]>(
+  const req = new ApiRequest<{ room: Room }>(
     starred ? ApiRequestMethod.POST : ApiRequestMethod.DELETE,
     buildRoomApiUrlFromRoom(room, "star"),
     {
@@ -318,7 +338,7 @@ export const setRoomStar = (room, starred) => (dispatch, getState) => {
     }
   )
 
-  req.execute().then((star) => dispatch({ type: Types.RoomStarSet, star }))
+  req.execute().then((star) => dispatch(receiveRoom(star.room)))
 }
 
 export const closeRoom = (room) => (dispatch, getState) => {
@@ -328,7 +348,7 @@ export const closeRoom = (room) => (dispatch, getState) => {
   })
 
   const { authenticatedToken } = getState()
-  const req = new ApiRequest<Room[]>(
+  const req = new ApiRequest<{ user: User; room: Room }>(
     ApiRequestMethod.DELETE,
     buildRoomApiUrlFromRoom(room, "open"),
     {
@@ -336,7 +356,7 @@ export const closeRoom = (room) => (dispatch, getState) => {
     }
   )
 
-  req.execute().then((open) => dispatch({ type: Types.RoomClosed, open }))
+  req.execute().then((open) => dispatch(receiveRoom(open.room)))
 }
 
 export const fetchLocations = () => (dispatch, getState) => {

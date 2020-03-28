@@ -19,9 +19,11 @@ const initialState = {
   roomSubscriptions: {},
   roomKeydowns: {},
   roomMessages: {},
+  unreadRooms: {},
   searchedRooms: [],
   userStateSubscriptions: {},
   userStates: {},
+  openRoomId: null,
   login: {
     isInvalid: false,
   },
@@ -77,6 +79,7 @@ const reducer = (state, action) => {
         rooms: null,
         roomMessages: {},
         roomKeydowns: {},
+        unreadRooms: {},
         subscriptions: {},
         userStateSubscriptions: {},
       }
@@ -93,9 +96,7 @@ const reducer = (state, action) => {
         ...state,
         isAuthenticated: true,
         authenticatedUser: action.manifest.user,
-        userStateSubscription: action.userStateSubscription,
         consumer: action.consumer,
-        rooms: action.manifest.rooms,
         lastOpenRoom: action.manifest.lastOpenRoom,
         isReady: true,
       }
@@ -145,9 +146,15 @@ const reducer = (state, action) => {
     case Types.RoomMessageReceived: {
       return {
         ...state,
+        unreadRooms: {
+          ...state.unreadRooms,
+          [action.room.id]: state.openRoomId !== action.room.id,
+        },
         roomMessages: {
           ...state.roomMessages,
-          [action.room.id]: [...(state.roomMessages[action.room.id] || []), action.message],
+          [action.room.id]: state.roomMessages[action.room.id]
+            ? [...state.roomMessages[action.room.id], action.message]
+            : undefined,
         },
       }
     }
@@ -211,25 +218,30 @@ const reducer = (state, action) => {
         ),
       }
     }
-    case Types.RoomStarSet: {
+    case Types.RoomsReceived: {
+      return {
+        ...state,
+        rooms: action.rooms,
+      }
+    }
+    case Types.RoomReceived: {
       return {
         ...state,
         rooms: pushOrReplace(
           state.rooms,
-          action.star.room,
+          action.room,
           (oldRoom, newRoom) => newRoom.id === oldRoom.id
         ),
       }
     }
-    case Types.RoomOpened:
-    case Types.RoomClosed: {
+    case Types.RoomOpened: {
       return {
         ...state,
-        rooms: pushOrReplace(
-          state.rooms,
-          action.open.room,
-          (oldRoom, newRoom) => newRoom.id === oldRoom.id
-        ),
+        openRoomId: action.room.id,
+        unreadRooms: {
+          ...state.unreadRooms,
+          [action.room.id]: false,
+        },
       }
     }
     case Types.LocationsFetched: {
