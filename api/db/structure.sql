@@ -122,10 +122,10 @@ ALTER SEQUENCE public.messages_id_seq OWNED BY public.messages.id;
 
 
 --
--- Name: open_rooms; Type: TABLE; Schema: public; Owner: -
+-- Name: room_opens; Type: TABLE; Schema: public; Owner: -
 --
 
-CREATE TABLE public.open_rooms (
+CREATE TABLE public.room_opens (
     id bigint NOT NULL,
     room_id bigint NOT NULL,
     user_id bigint NOT NULL,
@@ -135,10 +135,10 @@ CREATE TABLE public.open_rooms (
 
 
 --
--- Name: open_rooms_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+-- Name: room_opens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
-CREATE SEQUENCE public.open_rooms_id_seq
+CREATE SEQUENCE public.room_opens_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -147,10 +147,10 @@ CREATE SEQUENCE public.open_rooms_id_seq
 
 
 --
--- Name: open_rooms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: room_opens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.open_rooms_id_seq OWNED BY public.open_rooms.id;
+ALTER SEQUENCE public.room_opens_id_seq OWNED BY public.room_opens.id;
 
 
 --
@@ -289,10 +289,10 @@ ALTER TABLE ONLY public.messages ALTER COLUMN id SET DEFAULT nextval('public.mes
 
 
 --
--- Name: open_rooms id; Type: DEFAULT; Schema: public; Owner: -
+-- Name: room_opens id; Type: DEFAULT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.open_rooms ALTER COLUMN id SET DEFAULT nextval('public.open_rooms_id_seq'::regclass);
+ALTER TABLE ONLY public.room_opens ALTER COLUMN id SET DEFAULT nextval('public.room_opens_id_seq'::regclass);
 
 
 --
@@ -349,11 +349,11 @@ ALTER TABLE ONLY public.messages
 
 
 --
--- Name: open_rooms open_rooms_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+-- Name: room_opens room_opens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.open_rooms
-    ADD CONSTRAINT open_rooms_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY public.room_opens
+    ADD CONSTRAINT room_opens_pkey PRIMARY KEY (id);
 
 
 --
@@ -431,24 +431,24 @@ CREATE INDEX index_messages_on_room_id ON public.messages USING btree (room_id);
 
 
 --
--- Name: index_open_rooms_on_room_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_room_opens_on_room_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE INDEX index_open_rooms_on_room_id ON public.open_rooms USING btree (room_id);
-
-
---
--- Name: index_open_rooms_on_user_id; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE INDEX index_open_rooms_on_user_id ON public.open_rooms USING btree (user_id);
+CREATE INDEX index_room_opens_on_room_id ON public.room_opens USING btree (room_id);
 
 
 --
--- Name: index_open_rooms_on_user_id_and_room_id; Type: INDEX; Schema: public; Owner: -
+-- Name: index_room_opens_on_user_id; Type: INDEX; Schema: public; Owner: -
 --
 
-CREATE UNIQUE INDEX index_open_rooms_on_user_id_and_room_id ON public.open_rooms USING btree (user_id, room_id);
+CREATE INDEX index_room_opens_on_user_id ON public.room_opens USING btree (user_id);
+
+
+--
+-- Name: index_room_opens_on_user_id_and_room_id; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX index_room_opens_on_user_id_and_room_id ON public.room_opens USING btree (user_id, room_id);
 
 
 --
@@ -578,10 +578,10 @@ ALTER TABLE ONLY public.messages
 
 
 --
--- Name: open_rooms fk_rails_ac348159fa; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: room_opens fk_rails_ac348159fa; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.open_rooms
+ALTER TABLE ONLY public.room_opens
     ADD CONSTRAINT fk_rails_ac348159fa FOREIGN KEY (user_id) REFERENCES public.users(id) ON DELETE CASCADE;
 
 
@@ -594,10 +594,10 @@ ALTER TABLE ONLY public.room_stars
 
 
 --
--- Name: open_rooms fk_rails_e8a1aa20b1; Type: FK CONSTRAINT; Schema: public; Owner: -
+-- Name: room_opens fk_rails_e8a1aa20b1; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
-ALTER TABLE ONLY public.open_rooms
+ALTER TABLE ONLY public.room_opens
     ADD CONSTRAINT fk_rails_e8a1aa20b1 FOREIGN KEY (room_id) REFERENCES public.rooms(id) ON DELETE CASCADE;
 
 
@@ -619,6 +619,7 @@ INSERT INTO "schema_migrations" (version) VALUES
 ('20200315223824'),
 ('20200327023434'),
 ('20200327221844'),
-('20200328002356');
+('20200328002356'),
+('20200328012514');
 
 

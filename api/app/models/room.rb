@@ -8,7 +8,8 @@ class Room < ApplicationRecord
   belongs_to :location, optional: true
   has_many :messages
   has_many :stars, class_name: "RoomStar", source: :room
-  has_many :open_rooms
+  has_many :room_opens
+  has_many :open_by_users, through: :room_opens, source: :user
   has_many :reads, through: :messages
 
   pg_search_scope :search, against: %i(handle description)
@@ -25,21 +26,21 @@ class Room < ApplicationRecord
   scope :for_manifest, ->(manifest) {
     distinct.
       left_outer_joins(:stars).
-      left_outer_joins(:open_rooms).
+      left_outer_joins(:room_opens).
       where(room_stars: { user_id: manifest.user.id }).
       or(
         distinct.
           left_outer_joins(:stars).
-          left_outer_joins(:open_rooms).
-          where(open_rooms: { user_id: manifest.user.id })
+          left_outer_joins(:room_opens).
+          where(room_opens: { user_id: manifest.user.id })
       ).
       order(:handle)
   }
 
   scope :find_last_open_for!, ->(user) {
-    joins(:open_rooms).
-      where(open_rooms: { user_id: user.id }).
-      order("open_rooms.updated_at desc").
+    joins(:room_opens).
+      where(room_opens: { user_id: user.id }).
+      order("room_opens.updated_at desc").
       first!
   }
 
@@ -82,15 +83,15 @@ class Room < ApplicationRecord
   end
 
   def open_for?(user)
-    open_rooms.where(user: user).any?
+    room_opens.where(user: user).any?
   end
 
   def open!(user)
-    open_rooms.find_or_create_by!(user: user).tap(&:touch)
+    room_opens.find_or_create_by!(user: user).tap(&:touch)
   end
 
   def close!(user)
-    open_rooms.find_by!(user: user).destroy
+    room_opens.find_by!(user: user).destroy
   end
 
   def star!(user)

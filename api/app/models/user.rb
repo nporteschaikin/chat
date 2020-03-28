@@ -3,8 +3,9 @@ class User < ApplicationRecord
 
   has_many :user_tokens
   has_many :room_stars
-  has_many :open_rooms
+  has_many :room_opens
   has_many :starred_rooms, through: :room_stars, source: :room
+  has_many :open_rooms, through: :room_opens, source: :room
   has_many :authored_messages, class_name: "Message", source: :author
 
   belongs_to :location
@@ -34,15 +35,15 @@ class User < ApplicationRecord
   scope :to_upsert_message_reads_for, ->(message) {
     distinct.
       left_outer_joins(:room_stars).
-      left_outer_joins(:open_rooms).
+      left_outer_joins(:room_opens).
       where.not(id: message.author_id).
       where(room_stars: { room_id: message.room_id }).
       or(
         distinct.
           left_outer_joins(:room_stars).
-          left_outer_joins(:open_rooms).
+          left_outer_joins(:room_opens).
           where.not(id: message.author_id).
-          where(open_rooms: { room_id: message.room_id })
+          where(room_opens: { room_id: message.room_id })
       )
   }
 
